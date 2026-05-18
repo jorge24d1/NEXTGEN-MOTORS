@@ -1,0 +1,23 @@
+--- REPORTE DE REUNIONES - NEXTGEN MOTORS ---
+
+ID: 4
+Título: Estrategia de Ventas
+Fecha: 2024-05-20
+Hora: 01:00
+Categoría: marketing
+Descripción: Discutir los nuevos modelos de camionetas
+-------------------------------------------
+ID: 6
+Título: Estrategia de Ventas
+Fecha: 2024-05-14
+Hora: 13:00
+Categoría: gestion
+Descripción: Discutir los nuevos modelos de camionetas
+-------------------------------------------
+ID: 7
+Título: Estrategia de Ventas
+Fecha: 2024-05-20
+Hora: 08:00
+Categoría: gestion
+Descripción: Discutir los nuevos modelos de camionetas
+-------------------------------------------

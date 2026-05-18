@@ -6,6 +6,7 @@ import com.concesionario.model.Vehiculo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.Authentication;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,12 +26,15 @@ public class ChatbotRestController {
     private VehiculoRepository vehiculoRepository;
 
     @PostMapping("/mensaje")
-    public ResponseEntity<?> recibirMensaje(@RequestBody Map<String, Object> request) {
+    public ResponseEntity<?> recibirMensaje(@RequestBody Map<String, Object> request, Authentication authentication) {
         try {
             String mensaje = (String) request.get("mensaje");
             List<Map<String, String>> historial = (List<Map<String, String>>) request.get("historial");
 
-            String respuestaIA = chatbotService.analizarYResponder(mensaje, historial);
+            boolean isAdmin = authentication != null && authentication.getAuthorities().stream()
+                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMINISTRADOR"));
+
+            String respuestaIA = chatbotService.analizarYResponder(mensaje, historial, isAdmin);
             
             List<Vehiculo> recomendados = new ArrayList<>();
             

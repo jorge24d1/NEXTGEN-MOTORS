@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Busca tu Vehículo Ideal | NextGen Motors</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body { font-family: 'Manrope', sans-serif; background: #0a0f14; color: #e5e7eb; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .accent-gradient { background: linear-gradient(135deg, #0f66bd 0%, #2563eb 100%); }
+        .usage-card { cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .usage-card:hover { transform: translateY(-5px); background: rgba(255, 255, 255, 0.05); border-color: rgba(37, 99, 235, 0.5); }
+        .usage-card.selected { background: rgba(37, 99, 235, 0.1); border-color: #2563eb; box-shadow: 0 0 20px rgba(37, 99, 235, 0.2); }
+        .usage-card i { transition: all 0.3s; }
+        .usage-card.selected i { color: #3b82f6; transform: scale(1.2); }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center py-12 px-4">
+    
+    <div class="mb-10 max-w-4xl w-full mx-auto text-center">
+        <a th:href="@{/usuario/Inicio}" class="text-gray-500 hover:text-white transition-colors text-sm mb-6 inline-flex items-center gap-2">
+            <i class="fas fa-arrow-left"></i> Volver al Inicio
+        </a>
+        <h1 class="text-5xl font-extrabold mb-4 text-white tracking-tight">Tu <span class="text-blue-500">Match Perfecto</span></h1>
+        <p class="text-gray-400 text-lg">Responde unas preguntas simples y nuestro algoritmo hará la matemática por ti.</p>
+    </div>
+
+    <form th:action="@{/vehiculo-ideal}" method="POST" id="ideal-form" class="max-w-4xl w-full space-y-12">
+        
+        <!-- SECCIÓN 1: USO PRINCIPAL -->
+        <div class="space-y-6">
+            <h2 class="text-2xl font-bold text-center flex items-center justify-center gap-3">
+                <span class="w-8 h-8 rounded-full bg-blue-600 text-white text-sm flex items-center justify-center">1</span>
+                ¿Para qué usarás tu vehículo?
+            </h2>
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+                <div class="usage-card glass p-6 rounded-2xl text-center flex flex-col items-center justify-center gap-4" onclick="selectUsage(this, 'Familiar')">
+                    <i class="fas fa-users text-3xl text-gray-500"></i>
+                    <span class="text-xs font-bold uppercase tracking-wider">Familiar</span>
+                </div>
+                <div class="usage-card glass p-6 rounded-2xl text-center flex flex-col items-center justify-center gap-4" onclick="selectUsage(this, 'Deportivo')">
+                    <i class="fas fa-tachometer-alt text-3xl text-gray-500"></i>
+                    <span class="text-xs font-bold uppercase tracking-wider">Deportivo</span>
+                </div>
+                <div class="usage-card glass p-6 rounded-2xl text-center flex flex-col items-center justify-center gap-4" onclick="selectUsage(this, 'Trabajo')">
+                    <i class="fas fa-truck-pickup text-3xl text-gray-500"></i>
+                    <span class="text-xs font-bold uppercase tracking-wider">Trabajo</span>
+                </div>
+                <div class="usage-card glass p-6 rounded-2xl text-center flex flex-col items-center justify-center gap-4" onclick="selectUsage(this, 'Lujo')">
+                    <i class="fas fa-crown text-3xl text-gray-500"></i>
+                    <span class="text-xs font-bold uppercase tracking-wider">Lujo</span>
+                </div>
+                <div class="usage-card glass p-6 rounded-2xl text-center flex flex-col items-center justify-center gap-4" onclick="selectUsage(this, 'Equilibrado')">
+                    <i class="fas fa-city text-3xl text-gray-500"></i>
+                    <span class="text-xs font-bold uppercase tracking-wider">Urbano</span>
+                </div>
+            </div>
+            <input type="hidden" name="usoPrincipal" id="usoPrincipal" required>
+        </div>
+
+        <!-- SECCIÓN 2: PREFERENCIAS TÉCNICAS -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="space-y-4">
+                <h3 class="text-lg font-bold flex items-center gap-2">
+                    <i class="fas fa-cog text-blue-500"></i> Transmisión
+                </h3>
+                <div class="grid grid-cols-3 gap-3">
+                    <label class="cursor-pointer">
+                        <input type="radio" name="prefTransmision" value="Automática" class="hidden peer" checked>
+                        <div class="p-3 text-center rounded-xl border border-gray-800 bg-gray-900/50 peer-checked:border-blue-500 peer-checked:bg-blue-500/10 transition-all">
+                            <span class="text-sm font-bold">Automática</span>
+                        </div>
+                    </label>
+                    <label class="cursor-pointer">
+                        <input type="radio" name="prefTransmision" value="Manual" class="hidden peer">
+                        <div class="p-3 text-center rounded-xl border border-gray-800 bg-gray-900/50 peer-checked:border-blue-500 peer-checked:bg-blue-500/10 transition-all">
+                            <span class="text-sm font-bold">Manual</span>
+                        </div>
+                    </label>
+                    <label class="cursor-pointer">
+                        <input type="radio" name="prefTransmision" value="" class="hidden peer">
+                        <div class="p-3 text-center rounded-xl border border-gray-800 bg-gray-900/50 peer-checked:border-blue-500 peer-checked:bg-blue-500/10 transition-all">
+                            <span class="text-sm font-bold">Cualquiera</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="space-y-4">
+                <h3 class="text-lg font-bold flex items-center gap-2">
+                    <i class="fas fa-leaf text-emerald-500"></i> Tipo de Motor
+                </h3>
+                <select name="prefCombustible" class="w-full bg-gray-900 border-gray-700 rounded-xl text-white focus:ring-blue-500">
+                    <option value="">Cualquier combustible</option>
+                    <option value="Gasolina">Solo Gasolina</option>
+                    <option value="Híbrido">Híbrido</option>
+                    <option value="Eléctrico">100% Eléctrico</option>
+                    <option value="Diesel">Diesel</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 3: RESTRICCIONES DURAS -->
+        <div class="glass p-8 rounded-[32px] space-y-8">
+            <h3 class="text-xl font-bold flex items-center gap-2 border-b border-white/5 pb-4">
+                <i class="fas fa-lock text-blue-500"></i> Tus Límites Reales
+            </h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
+                <!-- Rango de Precio -->
+                <div class="space-y-4">
+                    <label class="block text-sm font-bold text-gray-400">Rango de Presupuesto (COP)</label>
+                    <div class="flex items-center gap-4">
+                        <div class="flex-1 relative">
+                            <span class="absolute left-3 top-2.5 text-gray-600">$</span>
+                            <input type="number" name="minPrecio" placeholder="Mínimo" value="30000000" class="w-full pl-8 bg-gray-900 border-gray-700 rounded-xl text-white">
+                        </div>
+                        <span class="text-gray-600">a</span>
+                        <div class="flex-1 relative">
+                            <span class="absolute left-3 top-2.5 text-gray-600">$</span>
+                            <input type="number" name="maxPrecio" placeholder="Máximo" value="180000000" class="w-full pl-8 bg-gray-900 border-gray-700 rounded-xl text-white">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pasajeros y Año -->
+                <div class="grid grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-bold text-gray-400 mb-2">Pasajeros Mín.</label>
+                        <select name="minPasajeros" class="w-full bg-gray-900 border-gray-700 rounded-xl text-white">
+                            <option value="2">2 personas</option>
+                            <option value="4">4 personas</option>
+                            <option value="5" selected>5 personas</option>
+                            <option value="7">7+ personas</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-400 mb-2">Modelo Mín.</label>
+                        <select name="minAnio" class="w-full bg-gray-900 border-gray-700 rounded-xl text-white">
+                            <option value="2015">2015+</option>
+                            <option value="2018">2018+</option>
+                            <option value="2020" selected>2020+</option>
+                            <option value="2023">2023+</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button type="submit" id="submit-btn" class="w-full py-5 rounded-2xl accent-gradient text-white font-black text-xl shadow-2xl hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+            Analizar Catálogo y Recomendar
+        </button>
+    </form>
+
+    <script>
+        function selectUsage(element, value) {
+            // Deseleccionar todos
+            document.querySelectorAll('.usage-card').forEach(card => card.classList.remove('selected'));
+            // Seleccionar el actual
+            element.classList.add('selected');
+            // Actualizar input oculto
+            document.getElementById('usoPrincipal').value = value;
+            
+            // Validar botón
+            validateForm();
+        }
+
+        function validateForm() {
+            const uso = document.getElementById('usoPrincipal').value;
+            const btn = document.getElementById('submit-btn');
+            btn.disabled = !uso;
+            
+            if (!uso) {
+                btn.innerText = 'Selecciona un uso principal arriba';
+            } else {
+                btn.innerText = 'Analizar Catálogo y Recomendar';
+            }
+        }
+
+        // Validación inicial
+        validateForm();
+    </script>
+</body>
+</html>

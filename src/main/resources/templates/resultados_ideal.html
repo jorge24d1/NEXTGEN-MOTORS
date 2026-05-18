@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tus Recomendaciones | NextGen Motors</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        body { font-family: 'Manrope', sans-serif; background: #0a0f14; color: #e5e7eb; }
+        .glass { background: rgba(255,255,255,0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
+        .score-badge { background: linear-gradient(135deg, #059669, #10b981); }
+        .accent-grad { background: linear-gradient(135deg, #0f66bd, #2563eb); }
+        .card-anim { animation: popIn 0.5s ease forwards; }
+        @keyframes popIn { from { opacity:0; transform:scale(0.9); } to { opacity:1; transform:scale(1); } }
+    </style>
+</head>
+<body class="min-h-screen py-12 px-4" style="background:#0a0f14">
+<div class="max-w-6xl mx-auto">
+
+    <!-- HEADER -->
+    <header class="flex flex-col md:flex-row justify-between items-center mb-12 gap-6">
+        <div>
+            <a th:href="@{/usuario/Inicio}" class="text-blue-500 text-sm font-bold flex items-center gap-2 mb-2 hover:underline">
+                <i class="fas fa-chevron-left"></i> Volver al Concesionario
+            </a>
+            <h1 class="text-4xl font-extrabold text-white">Tu <span class="text-blue-500">Selección Optimizada</span></h1>
+            <p class="text-gray-400 mt-2" th:text="${'Perfil: ' + preferencias.usoPrincipal}">Perfil</p>
+        </div>
+        <a th:href="@{/vehiculo-ideal}" class="px-6 py-3 rounded-xl glass text-white hover:bg-white/10 transition flex items-center gap-2">
+            <i class="fas fa-sliders-h"></i> Ajustar Preferencias
+        </a>
+    </header>
+
+    <!-- SIN RESULTADOS -->
+    <div th:if="${resultados == null or resultados.empty}"
+         class="text-center py-32 glass rounded-3xl border-2 border-dashed border-gray-800">
+        <i class="fas fa-search-minus text-5xl text-gray-600 mb-6 block"></i>
+        <h2 class="text-2xl font-bold text-white">Sin coincidencias exactas</h2>
+        <p class="text-gray-400 mt-3 max-w-sm mx-auto">
+            Tu presupuesto o requerimientos son muy estrictos. Prueba subiendo el presupuesto o bajando el año mínimo.
+        </p>
+        <a th:href="@{/vehiculo-ideal}" class="mt-8 inline-block px-8 py-3 rounded-xl accent-grad text-white font-bold">
+            Relajar Filtros
+        </a>
+    </div>
+
+    <!-- RESULTADOS -->
+    <div th:if="${resultados != null and !resultados.empty}"
+         class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+        <div th:each="res : ${resultados}"
+             class="glass rounded-3xl overflow-hidden flex flex-col group card-anim">
+
+            <!-- Imagen -->
+            <div class="relative h-56 overflow-hidden">
+                <img th:src="${res.vehiculo.imagenUrl}"
+                     class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                     alt="Vehículo recomendado">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+
+                <!-- Score Badge -->
+                <div class="absolute top-4 right-4 score-badge px-3 py-1 rounded-full text-sm font-black text-white shadow-xl flex items-center gap-2">
+                    <i class="fas fa-star"></i>
+                    <span th:text="${#numbers.formatDecimal(res.satisfactionIndex, 1, 2)}">8.5</span>
+                </div>
+
+                <div class="absolute bottom-4 left-6">
+                    <h3 class="text-xl font-black text-white"
+                        th:text="${res.vehiculo.marca + ' ' + res.vehiculo.modelo}">Modelo</h3>
+                    <span class="text-blue-400 text-xs font-bold" th:text="${res.vehiculo.categoria}">SUV</span>
+                </div>
+            </div>
+
+            <!-- Info -->
+            <div class="p-6 flex-grow space-y-4">
+                <div class="flex justify-between items-end">
+                    <div>
+                        <p class="text-xs text-gray-500 uppercase tracking-widest mb-1">Precio</p>
+                        <p class="text-2xl font-black text-white"
+                           th:text="${'$' + #numbers.formatInteger(res.vehiculo.precio, 1, 'COMMA')}">$30.000.000</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-xs text-gray-500 uppercase tracking-widest mb-1">Año</p>
+                        <p class="text-lg font-bold text-gray-300" th:text="${res.vehiculo.año}">2024</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3 text-xs text-gray-400">
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-users text-blue-500"></i>
+                        <span th:text="${res.vehiculo.pasajeros + ' plazas'}">5 plazas</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-gas-pump text-blue-500"></i>
+                        <span th:text="${res.vehiculo.combustible}">Gasolina</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-cog text-blue-500"></i>
+                        <span th:text="${res.vehiculo.transmision}">Automática</span>
+                    </div>
+                </div>
+
+                <!-- Barras de satisfacción -->
+                <div class="border-t border-white/5 pt-4 space-y-2">
+                    <p class="text-xs text-gray-600 uppercase font-bold tracking-wider">Puntuación</p>
+                    <div>
+                        <div class="flex justify-between text-xs text-gray-500 mb-1">
+                            <span>Modernidad</span>
+                            <span th:text="${#numbers.formatDecimal(res.scoreAnio * 100, 1, 0) + '%'}">90%</span>
+                        </div>
+                        <div class="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                            <div class="h-full bg-blue-500 rounded-full"
+                                 th:style="${'width:' + (res.scoreAnio * 100) + '%'}"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-xs text-gray-500 mb-1">
+                            <span>Precio relativo</span>
+                            <span th:text="${#numbers.formatDecimal(res.scorePrecio * 100, 1, 0) + '%'}">70%</span>
+                        </div>
+                        <div class="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                            <div class="h-full bg-emerald-500 rounded-full"
+                                 th:style="${'width:' + (res.scorePrecio * 100) + '%'}"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Badges de match -->
+                <div class="flex flex-wrap gap-2">
+                    <span th:if="${res.matchCategoria}"
+                          class="text-xs px-2 py-1 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                        <i class="fas fa-check mr-1"></i>Perfil OK
+                    </span>
+                    <span th:if="${res.matchCombustible}"
+                          class="text-xs px-2 py-1 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                        <i class="fas fa-leaf mr-1"></i>Motor OK
+                    </span>
+                </div>
+            </div>
+
+            <div class="p-6 pt-0">
+                <a th:href="@{/vehiculos/explorar/{id}(id=${res.vehiculo.id})}"
+                   class="block w-full py-3 text-center rounded-2xl bg-white/5 hover:bg-white/10 text-white text-sm font-bold transition border border-white/5">
+                    Ver Detalles
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECCIÓN DANTE -->
+    <div class="mt-20 glass p-10 rounded-3xl border border-blue-500/30 text-center max-w-2xl mx-auto">
+        <div class="bg-blue-600 w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg shadow-blue-500/40">
+            <i class="fas fa-robot text-2xl text-white"></i>
+        </div>
+        <h2 class="text-2xl font-black mb-3">¿Quieres la opinión de Dante?</h2>
+        <p class="text-gray-400 mb-6 text-sm">
+            Dante conoce tu perfil exacto. Puede explicarte por qué estas opciones son las mejores del catálogo para ti.
+        </p>
+        <!-- Almacenar datos en inputs ocultos para evitar errores de parsing -->
+        <input type="hidden" id="d-uso"   th:value="${preferencias.usoPrincipal}">
+        <input type="hidden" id="d-min"   th:value="${preferencias.minPrecio}">
+        <input type="hidden" id="d-max"   th:value="${preferencias.maxPrecio}">
+        <input type="hidden" id="d-trans" th:value="${preferencias.prefTransmision}">
+        <input type="hidden" id="d-comb"  th:value="${preferencias.prefCombustible}">
+
+        <button onclick="hablarConDante()"
+                class="px-8 py-4 rounded-2xl accent-grad text-white font-black text-base shadow-xl hover:scale-105 transition flex items-center gap-3 mx-auto">
+            <i class="fas fa-comment-dots"></i> Preguntar a Dante
+        </button>
+    </div>
+
+</div>
+
+<script>
+function hablarConDante() {
+    var uso   = document.getElementById('d-uso').value   || 'Equilibrado';
+    var min   = document.getElementById('d-min').value   || '0';
+    var max   = document.getElementById('d-max').value   || '0';
+    var trans = document.getElementById('d-trans').value || 'Cualquiera';
+    var comb  = document.getElementById('d-comb').value  || 'Cualquiera';
+
+    var context = "Hola Dante! Use la busqueda de Vehiculo Ideal con este perfil:\n";
+    context += "- Uso: " + uso + "\n";
+    context += "- Presupuesto: $" + Number(min).toLocaleString('es-CO') + " a $" + Number(max).toLocaleString('es-CO') + " COP\n";
+    context += "- Transmision: " + trans + ", Motor: " + comb + "\n\n";
+    context += "El sistema me recomendo los mejores vehiculos del catalogo para este perfil. ";
+    context += "Por favor analiza cuales son los mas adecuados para alguien con perfil " + uso + ".";
+
+    sessionStorage.setItem('pendingDanteMessage', context);
+    window.location.href = '/usuario/Inicio';
+}
+</script>
+</body>
+</html>

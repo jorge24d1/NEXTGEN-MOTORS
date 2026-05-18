@@ -493,6 +493,26 @@ document.addEventListener('DOMContentLoaded', function() {
         return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     }
 
+    // Exponer función globalmente para ser llamada desde otras páginas
+    window.abrirChatbot = function(mensaje) {
+        if (chatContainer.classList.contains('hidden')) {
+            chatContainer.classList.remove('hidden');
+        }
+        if (mensaje) {
+            addUserMessage("Análisis de mi Vehículo Ideal");
+            buscarVehiculosInteligente(mensaje);
+        }
+    };
+
+    // ✅ MANEJO DE MENSAJES PENDIENTES (Desde la herramienta Vehículo Ideal)
+    const pendingMessage = sessionStorage.getItem('pendingDanteMessage');
+    if (pendingMessage) {
+        setTimeout(() => {
+            window.abrirChatbot(pendingMessage);
+            sessionStorage.removeItem('pendingDanteMessage');
+        }, 1000); // Pequeño delay para asegurar que todo cargó
+    }
+
     // Iniciar el temporizador de inactividad al cargar
     resetInactivityTimer();
 });
