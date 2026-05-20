@@ -149,7 +149,7 @@ public class SecurityConfig {
                 response.sendRedirect("/admin/dashboard");
             }
             else if (authorities.stream().anyMatch(a -> a.getAuthority().equals("ROLE_TRABAJADOR"))) {
-                response.sendRedirect("/trabajador/dashboard");
+                response.sendRedirect("/admin/dashboard");
             }
             else {
                 response.sendRedirect("/usuario/Inicio");

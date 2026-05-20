@@ -19,17 +19,57 @@ document.addEventListener('DOMContentLoaded', function() {
     const INACTIVITY_TIMEOUT = 180000; // 3 minutos en milisegundos
     const RESET_AFTER_PROMPT = 60000; // 1 minuto después del mensaje de inactividad
 
+    // Determinar el rol basado en la URL y elementos del DOM
+    const path = window.location.pathname;
+    let userRole = 'usuario';
+    if (path.startsWith('/admin')) {
+        if (document.getElementById('role-worker')) {
+            userRole = 'trabajador';
+        } else {
+            userRole = 'administrador';
+        }
+    } else if (path.startsWith('/perfil_gestor') || path.startsWith('/perfil_analisis') || path.startsWith('/perfil_asesor') || path.startsWith('/trabajador')) {
+        userRole = 'trabajador';
+    }
+
+    // Función para obtener el saludo inicial
+    function getWelcomeMessage() {
+        if (userRole === 'administrador') {
+            return {
+                text: '¡Hola Administrador! ¿En qué puedo asistirte en la gestión del sistema hoy?',
+                options: [
+                    { text: 'Crear reunión', value: 'crear reunion' },
+                    { text: 'Listar reuniones', value: 'listar reuniones' }
+                ]
+            };
+        } else if (userRole === 'trabajador') {
+            return {
+                text: '¡Hola equipo! ¿En qué te puedo ayudar hoy con tus tareas?',
+                options: [
+                    { text: 'Crear reunión', value: 'crear reunion' },
+                    { text: 'Listar reuniones', value: 'listar reuniones' }
+                ]
+            };
+        } else {
+            return {
+                text: '¡Hola! Bienvenido al concesionario. ¿En qué puedo ayudarte hoy?',
+                options: [
+                    { text: 'Vehículos disponibles', value: 'vehiculos' },
+                    { text: 'Agendar cita', value: 'agendar' },
+                    { text: 'Contactar asesor', value: 'asesor' },
+                    { text: 'Busca tu vehiculo ideal', value: 'ideal' }
+                ]
+            };
+        }
+    }
+
     // Función para restablecer el chat completamente
     function resetChat() {
         chatMessages.innerHTML = '';
         sessionStorage.removeItem('chatHistory');
         sessionStorage.removeItem('chatMessagesArray'); // Limpiar el array de historial
-        addBotMessage('¡Hola! Bienvenido al concesionario . ¿En qué puedo ayudarte hoy?', [
-            { text: 'Vehículos disponibles', value: 'vehiculos' },
-            { text: 'Agendar cita', value: 'agendar' },
-            { text: 'Contactar asesor', value: 'asesor' },
-            { text: 'Busca tu vehiculo ideal', value: 'ideal' }
-        ]);
+        const welcome = getWelcomeMessage();
+        addBotMessage(welcome.text, welcome.options);
         resetInactivityTimer();
     }
 
@@ -70,12 +110,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Mostrar mensaje inicial si no hay historial
     if (!sessionStorage.getItem('chatHistory')) {
-        addBotMessage('¡Hola! Bienvenido al concesionario. ¿En qué puedo ayudarte hoy?', [
-            { text: 'Vehículos disponibles', value: 'vehiculos' },
-            { text: 'Agendar cita', value: 'agendar' },
-            { text: 'Contactar asesor', value: 'asesor' },
-            { text: 'Busca tu vehiculo ideal', value: 'ideal' }
-        ]);
+        const welcome = getWelcomeMessage();
+        addBotMessage(welcome.text, welcome.options);
     }
 
     // Eventos que indican actividad del usuario
@@ -322,6 +358,48 @@ document.addEventListener('DOMContentLoaded', function() {
             resetChat();
             return;
         }
+        else if (input === 'crear reunion') {
+            // Mostrar la sección de reuniones
+            document.querySelectorAll('section[id]').forEach(s => s.classList.add('hidden'));
+            const target = document.getElementById('reuniones');
+            if (target) {
+                target.classList.remove('hidden');
+            }
+            // Actualizar clase active en el sidebar
+            document.querySelectorAll('.sidebar-link').forEach(link => {
+                if (link.getAttribute('href') === '#reuniones') {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+            // Abrir el modal de creación de reunión
+            if (typeof mostrarModal === 'function') {
+                mostrarModal('modal-reunion');
+            }
+            addBotMessage('He abierto el formulario para crear una reunión.');
+        }
+        else if (input === 'listar reuniones') {
+            // Mostrar la sección de reuniones
+            document.querySelectorAll('section[id]').forEach(s => s.classList.add('hidden'));
+            const target = document.getElementById('reuniones');
+            if (target) {
+                target.classList.remove('hidden');
+            }
+            // Actualizar clase active en el sidebar
+            document.querySelectorAll('.sidebar-link').forEach(link => {
+                if (link.getAttribute('href') === '#reuniones') {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+            // Refrescar reuniones
+            if (typeof refrescarReuniones === 'function') {
+                refrescarReuniones();
+            }
+            addBotMessage('Aquí tienes la lista de todas tus reuniones programadas.');
+        }
         else if (input === 'hola' || input === 'hi' || input === 'buenos días') {
             showMainMenu();
         }
@@ -429,12 +507,19 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function showMainMenu() {
-        addBotMessage('¿Cómo puedo ayudarte hoy?', [
-            { text: 'Vehículos disponibles', value: 'vehiculos' },
-            { text: 'Agendar cita', value: 'agendar' },
-            { text: 'Contactar asesor', value: 'asesor' },
-            { text: 'Busca tu vehiculo ideal', value: 'ideal' }
-        ]);
+        if (userRole === 'administrador' || userRole === 'trabajador') {
+            addBotMessage('¿En qué más te puedo ayudar hoy?', [
+                { text: 'Crear reunión', value: 'crear reunion' },
+                { text: 'Listar reuniones', value: 'listar reuniones' }
+            ]);
+        } else {
+            addBotMessage('¿Cómo puedo ayudarte hoy?', [
+                { text: 'Vehículos disponibles', value: 'vehiculos' },
+                { text: 'Agendar cita', value: 'agendar' },
+                { text: 'Contactar asesor', value: 'asesor' },
+                { text: 'Busca tu vehiculo ideal', value: 'ideal' }
+            ]);
+        }
     }
 
     function addUserMessage(text) {

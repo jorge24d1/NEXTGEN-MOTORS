@@ -71,7 +71,7 @@ public class UsuarioController {
             } else if (trabajador.tieneRol(Rol.TRB_ASESOR)) {
                 return "redirect:/perfil_asesor";
             } else if (trabajador.tieneRol(Rol.TRABAJADOR)) {
-                return "redirect:/trabajador/dashboard";
+                return "redirect:/admin/dashboard";
             }
         } catch (Exception e) {
             System.out.println("No es trabajador: " + e.getMessage());

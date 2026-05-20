@@ -1084,7 +1084,8 @@
                     </div>
 
                     <div>
-                        <span class="text-white font-bold text-lg sidebar-text">Administrador</span>
+                        <span id="role-admin" class="text-white font-bold text-lg sidebar-text" sec:authorize="hasRole('ROLE_ADMINISTRADOR')">Administrador</span>
+                        <span id="role-worker" class="text-white font-bold text-lg sidebar-text" sec:authorize="hasRole('ROLE_TRABAJADOR')">Trabajador</span>
                         <p class="text-gray-400 text-sm sidebar-text">NexGen Motors</p>
                     </div>
                 </div>
@@ -1140,11 +1141,18 @@
                         <span class="sidebar-text font-medium">Mis Trabajadores</span>
                     </a>
                 </li>
-                <li sec:authorize="hasRole('ROLE_ADMINISTRADOR')">
+                <li sec:authorize="hasAnyRole('ROLE_ADMINISTRADOR', 'ROLE_TRABAJADOR')">
                     <a href="#reuniones"
                         class="sidebar-link flex items-center gap-3 px-6 py-4 text-gray-300 hover:bg-gray-700 hover:text-white transition-all duration-300">
                         <i class='bx bxs-video text-xl'></i>
                         <span class="sidebar-text font-medium">Reuniones</span>
+                    </a>
+                </li>
+                <li sec:authorize="hasAnyRole('ROLE_ADMINISTRADOR', 'ROLE_TRABAJADOR')">
+                    <a href="#reportes"
+                        class="sidebar-link flex items-center gap-3 px-6 py-4 text-gray-300 hover:bg-gray-700 hover:text-white transition-all duration-300">
+                        <i class='bx bxs-file text-xl'></i>
+                        <span class="sidebar-text font-medium">Reportes</span>
                     </a>
                 </li>
             </ul>
@@ -1950,7 +1958,7 @@
                 </div>
             </section>
             <!-- ===================== REUNIONES SECTION ===================== -->
-            <section id="reuniones" class="p-4 lg:p-6 hidden">
+            <section id="reuniones" sec:authorize="hasAnyRole('ROLE_ADMINISTRADOR', 'ROLE_TRABAJADOR')" class="p-4 lg:p-6 hidden">
                 <div class="mb-6">
                     <h1 class="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white">Reuniones</h1>
                     <div class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 mt-2">
@@ -1994,6 +2002,78 @@
                                 </tbody>
                             </table>
                         </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===================== REPORTES SECTION ===================== -->
+            <section id="reportes" sec:authorize="hasAnyRole('ROLE_ADMINISTRADOR', 'ROLE_TRABAJADOR')" class="p-4 lg:p-6 hidden">
+                <div class="mb-6">
+                    <h1 class="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white">Reportes</h1>
+                    <div class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 mt-2">
+                        <a href="#" class="hover:text-primary transition-colors">Dashboard</a>
+                        <i class='bx bx-chevron-right text-xs'></i>
+                        <a href="#" class="text-primary font-medium">Reportes</a>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Reporte de Rendimiento -->
+                    <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-150 dark:border-gray-700 flex flex-col justify-between h-full">
+                        <div>
+                            <div class="flex items-center gap-4 mb-4">
+                                <div class="p-3 bg-blue-100 dark:bg-blue-900/50 rounded-xl">
+                                    <i class='bx bxs-file-export text-2xl text-blue-600 dark:text-blue-400'></i>
+                                </div>
+                                <h3 class="text-xl font-bold text-gray-900 dark:text-white">Análisis de Rendimiento - Asesores</h3>
+                            </div>
+                            <p class="text-gray-600 dark:text-gray-400 mb-6 text-sm leading-relaxed">
+                                Genera un reporte detallado en formato Excel con el análisis mensual del rendimiento de todos los asesores de ventas, incluyendo prospectos, ventas y tasas de conversión.
+                            </p>
+                            <div class="flex flex-wrap gap-2 mb-6">
+                                <span class="px-2.5 py-1 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-semibold rounded-lg flex items-center gap-1">
+                                    <i class='bx bx-check-circle'></i> Prospectos
+                                </span>
+                                <span class="px-2.5 py-1 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-semibold rounded-lg flex items-center gap-1">
+                                    <i class='bx bx-check-circle'></i> Ventas
+                                </span>
+                                <span class="px-2.5 py-1 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-semibold rounded-lg flex items-center gap-1">
+                                    <i class='bx bx-check-circle'></i> Tasa de Conversión
+                                </span>
+                            </div>
+                        </div>
+                        <a th:href="@{/gestor/descargar-analisis-rendimiento}" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl transition-all duration-300 flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20">
+                            <i class='bx bxs-download text-lg'></i> Descargar Reporte Excel
+                        </a>
+                    </div>
+
+                    <!-- Reporte de Usuarios Potenciales con IA -->
+                    <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-150 dark:border-gray-700 flex flex-col justify-between h-full">
+                        <div>
+                            <div class="flex items-center gap-4 mb-4">
+                                <div class="p-3 bg-purple-100 dark:bg-purple-900/50 rounded-xl">
+                                    <i class='bx bxs-brain text-2xl text-purple-600 dark:text-purple-400'></i>
+                                </div>
+                                <h3 class="text-xl font-bold text-gray-900 dark:text-white">Usuarios Potenciales con IA</h3>
+                            </div>
+                            <p class="text-gray-600 dark:text-gray-400 mb-6 text-sm leading-relaxed">
+                                Análisis predictivo avanzado impulsado por Machine Learning para identificar clientes potenciales. Incluye probabilidades calculadas y niveles de confianza.
+                            </p>
+                            <div class="flex flex-wrap gap-2 mb-6">
+                                <span class="px-2.5 py-1 bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 text-xs font-semibold rounded-lg flex items-center gap-1">
+                                    <i class='bx bx-check-circle'></i> Probabilidades
+                                </span>
+                                <span class="px-2.5 py-1 bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 text-xs font-semibold rounded-lg flex items-center gap-1">
+                                    <i class='bx bx-check-circle'></i> Confianza
+                                </span>
+                                <span class="px-2.5 py-1 bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 text-xs font-semibold rounded-lg flex items-center gap-1">
+                                    <i class='bx bx-check-circle'></i> Observaciones IA
+                                </span>
+                            </div>
+                        </div>
+                        <a th:href="@{/gestor/descargar-reporte-potenciales}" class="w-full py-3 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-xl transition-all duration-300 flex items-center justify-center gap-2 shadow-lg shadow-purple-500/20">
+                            <i class='bx bxs-bot text-lg'></i> Descargar Análisis IA
+                        </a>
                     </div>
                 </div>
             </section>
