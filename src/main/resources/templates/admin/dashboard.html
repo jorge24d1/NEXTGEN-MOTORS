@@ -1964,10 +1964,16 @@
                     <div class="p-4 lg:p-6">
                         <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-6">
                             <h3 class="text-lg lg:text-xl font-semibold text-gray-900 dark:text-white">Lista de Reuniones</h3>
-                            <button onclick="mostrarModal('modal-reunion')" class="btn-primary">
-                                <i class='bx bx-plus'></i>
-                                <span>Crear Reunión</span>
-                            </button>
+                            <div class="flex gap-2">
+                                <button onclick="refrescarReuniones()" class="btn-secondary" id="btn-refrescar-reuniones" title="Refrescar reuniones">
+                                    <i class='bx bx-refresh'></i>
+                                    <span>Refrescar</span>
+                                </button>
+                                <button onclick="mostrarModal('modal-reunion')" class="btn-primary">
+                                    <i class='bx bx-plus'></i>
+                                    <span>Crear Reunión</span>
+                                </button>
+                            </div>
                         </div>
 
                         <div class="overflow-x-auto">

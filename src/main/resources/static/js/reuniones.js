@@ -105,6 +105,18 @@ document.addEventListener('DOMContentLoaded', function () {
         `).join('');
     }
 
+    // Función global para refrescar reuniones desde el botón
+    window.refrescarReuniones = function() {
+        const btn = document.getElementById('btn-refrescar-reuniones');
+        const icon = btn ? btn.querySelector('i') : null;
+        if (icon) {
+            icon.style.animation = 'spin 0.6s linear';
+            icon.addEventListener('animationend', () => { icon.style.animation = ''; }, { once: true });
+        }
+        cargarReuniones();
+        console.log('🔄 Reuniones refrescadas manualmente');
+    };
+
     window.eliminarReunion = function(id) {
         if (!confirm('¿Estás seguro de que deseas eliminar esta reunión?')) return;
 
