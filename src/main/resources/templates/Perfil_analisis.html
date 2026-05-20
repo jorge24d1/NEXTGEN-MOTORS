@@ -37,7 +37,7 @@
         <span class="logo-motors">Motors</span>
     </div>
     <button class="menu-toggle" id="menuToggle">
-        <i class="fas fa-bars"></i>
+        <i class="fas fa-bars" id="menuIcon"></i>
     </button>
     <div class="nav-links">
         <a th:href="@{/usuario/Inicio}">Inicio</a>
@@ -45,6 +45,52 @@
         <a th:href="@{/usuario/agendamiento}">Agendamiento online</a>
     </div>
 </nav>
+
+<!-- Menú hamburguesa-->
+<div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
+<div class="mobile-menu" id="mobileMenu">
+    <div class="mobile-menu-header">
+        <h3 class="text-lg font-bold">Menú</h3>
+        <button class="mobile-menu-close" id="mobileMenuClose">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+    <nav class="mobile-nav">
+        <a th:href="@{/usuario/Inicio}">Inicio</a>
+        <a href="/vehiculos">Nuestros Modelos</a>
+        <a th:href="@{/usuario/agendamiento}">Agendamiento online</a>
+    </nav>
+</div>
+
+<div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
+<div class="mobile-sidebar" id="mobileSidebar">
+    <div class="mobile-sidebar-header">
+        <span th:text="${nombreUsuario}">Analista</span>
+        <button id="mobileSidebarClose">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+    <nav class="mobile-sidebar-nav">
+        <a href="#bienvenida" class="mobile-sidebar-link">
+            <i class="fas fa-home"></i> Dashboard
+        </a>
+        <a href="#analisis-datos" class="mobile-sidebar-link">
+            <i class="fas fa-chart-column"></i> Análisis de Datos
+        </a>
+        <a href="#base-datos" class="mobile-sidebar-link">
+            <i class="fas fa-database"></i> Base de Datos
+        </a>
+        <a href="#reportes" class="mobile-sidebar-link">
+            <i class="fas fa-chart-pie"></i> Reportes
+        </a>
+        <a href="#tendencias" class="mobile-sidebar-link">
+            <i class="fas fa-chart-line"></i> Tendencias
+        </a>
+        <a href="#" onclick="confirmarCerrarSesion()" class="mobile-sidebar-link logout-link">
+            <i class="fas fa-sign-out-alt"></i> Cerrar sesión
+        </a>
+    </nav>
+</div>
 
 <!-- Contenedor principal -->
 <div class="main-container">
@@ -63,7 +109,7 @@
             </li>
             <li>
                 <a href="#analisis-datos">
-                    <i class='fas fa-chart-line'></i>
+                    <i class='fas fa-chart-column'></i>
                     <span class="text">Análisis de Datos</span>
                 </a>
             </li>
@@ -81,7 +127,7 @@
             </li>
             <li>
                 <a href="#tendencias">
-                    <i class='fas fa-trending-up'></i>
+                    <i class='fas fa-chart-line'></i>
                     <span class="text">Tendencias</span>
                 </a>
             </li>
@@ -124,8 +170,9 @@
 
         <!-- Análisis de Datos -->
         <section id="analisis-datos">
+            <h2 class="text-2xl font-bold mb-6">Análisis de Datos</h2>
             <div>
-                <iframe title="concesionariotablero" width="600" height="373.5" src="https://app.powerbi.com/view?r=eyJrIjoiMDljY2M3NWUtMWM1ZS00NjFiLTljNjgtMDQ3NGRlNDVjZGJjIiwidCI6IjlkMTJiZjNmLWU0ZjYtNDdhYi05MTJmLTFhMmYwZmM0OGFhNCIsImMiOjR9" frameborder="0" allowFullScreen="true"></iframe>
+                <iframe title="concesionariotablero" width="1040" height="700" src="https://app.powerbi.com/view?r=eyJrIjoiMDljY2M3NWUtMWM1ZS00NjFiLTljNjgtMDQ3NGRlNDVjZGJjIiwidCI6IjlkMTJiZjNmLWU0ZjYtNDdhYi05MTJmLTFhMmYwZmM0OGFhNCIsImMiOjR9" frameborder="0" allowFullScreen="true"></iframe>
             </div>
 
             <button class="btn-analista mt-4">
@@ -135,7 +182,7 @@
 
         <!-- Base de Datos -->
         <section id="base-datos">
-            <h2>Base de Datos - Estadísticas del Sistema</h2>
+            <h2 class="text-2xl font-bold mb-6">Base de Datos - Estadísticas del Sistema</h2>
 
             <!-- Grid de métricas con iconos -->
             <div class="metrics-grid">
@@ -226,16 +273,13 @@
 
         <!-- Tendencias -->
         <section id="tendencias">
-            <h2 class="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white mb-6">🎯 Predicción de Clientes Potenciales</h2>
+            <h2 class="text-2xl font-bold mb-6">Sistema de Predicción de Clientes</h2>
 
             <!-- Sistema de Predicción -->
             <div class="table-container">
                 <div class="p-4 lg:p-6">
                     <!-- Header con búsqueda Y PAGINACIÓN ARRIBA -->
                     <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-6">
-                        <h3 class="text-lg lg:text-xl font-semibold text-gray-900 dark:text-white">
-                            <i class='fas fa-chart-line mr-2'></i>Sistema de Predicción de Clientes
-                        </h3>
 
                         <div class="flex flex-col lg:flex-row gap-3 w-full lg:w-auto">
                             <!-- Barra de búsqueda -->
@@ -377,6 +421,52 @@
 <script>
     // Navegación entre secciones - IDÉNTICO AL ORIGINAL
     document.addEventListener('DOMContentLoaded', function() {
+        
+        //----------- MEJORA MENU HAMBURGUESA -----------
+        const menuToggle = document.getElementById('menuToggle');
+const menuIcon = document.getElementById('menuIcon');
+const mobileSidebar = document.getElementById('mobileSidebar');
+const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
+const mobileSidebarClose = document.getElementById('mobileSidebarClose');
+
+function openSidebar() {
+    mobileSidebar.classList.add('active');
+    mobileMenuOverlay.classList.add('active');
+    menuIcon.classList.replace('fa-bars', 'fa-times');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeSidebar() {
+    mobileSidebar.classList.remove('active');
+    mobileMenuOverlay.classList.remove('active');
+    menuIcon.classList.replace('fa-times', 'fa-bars');
+    document.body.style.overflow = 'auto';
+}
+
+menuToggle.addEventListener('click', openSidebar);
+mobileSidebarClose.addEventListener('click', closeSidebar);
+mobileMenuOverlay.addEventListener('click', closeSidebar);
+
+// Cerrar con ESC
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeSidebar();
+});
+
+// Cerrar al hacer click en un link y navegar a la sección
+document.querySelectorAll('.mobile-sidebar-link').forEach(link => {
+    link.addEventListener('click', function() {
+        if (this.getAttribute('href').startsWith('#')) {
+            closeSidebar();
+
+            // Navegar a la sección correcta
+            const targetId = this.getAttribute('href').substring(1);
+            document.querySelectorAll('main section').forEach(s => s.style.display = 'none');
+            const target = document.getElementById(targetId);
+            if (target) target.style.display = 'block';
+        }
+    });
+});
+
         document.querySelectorAll('main section').forEach(section => {
             section.style.display = 'none';
         });

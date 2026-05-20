@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.w3.org/1999/xhtml">
+<html lang="es" xmlns:th="http://www.w3.org/1999/xhtml" class="dark">
 
 <head>
     <meta charset="UTF-8">
@@ -28,7 +28,7 @@
 
         <!-- AGREGAR BOTÓN HAMBURGUESA -->
         <button class="menu-toggle" id="menuToggle">
-            <i class="fas fa-bars"></i>
+            <i class="fas fa-bars" id="menuIcon"></i>
         </button>
 
         <div class="nav-links">
@@ -38,8 +38,34 @@
         </div>
     </nav>
 
-    <!-- AGREGAR OVERLAY PARA MÓVIL -->
-    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <!-- Menu Hamburguesa para móvil (drawer lateral) -->
+    <div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
+    <div class="mobile-sidebar" id="mobileSidebar">
+        <div class="mobile-sidebar-header">
+            <span id="nombre-asesor-mobile">Asesor</span>
+            <button id="mobileSidebarClose">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <nav class="mobile-sidebar-nav">
+            <a href="#bienvenida" class="mobile-sidebar-link">
+                <i class="fas fa-chart-line"></i> Dashboard
+            </a>
+            <a href="#prospectos" class="mobile-sidebar-link">
+                <i class="fas fa-users"></i> Mis Prospectos
+            </a>
+            <a href="#vehiculos" class="mobile-sidebar-link">
+                <i class="fas fa-car"></i> Vehículos
+            </a>
+            <a href="#agenda" class="mobile-sidebar-link">
+                <i class="fas fa-calendar-alt"></i> Agenda
+            </a>
+            <a href="#" onclick="confirmarCerrarSesion()" class="mobile-sidebar-link logout-link">
+                <i class="fas fa-sign-out-alt"></i> Cerrar sesión
+            </a>
+        </nav>
+    </div>
+
     <!-- Contenedor principal -->
     <div class="main-container">
         <!-- Barra lateral -->
@@ -421,6 +447,8 @@
 
                 document.getElementById('nombre-asesor').textContent = datosAsesor.nombre;
                 document.getElementById('nombre-bienvenida').textContent = datosAsesor.nombre;
+                const nombreMobile = document.getElementById('nombre-asesor-mobile');
+                if (nombreMobile) nombreMobile.textContent = datosAsesor.nombre;
                 document.getElementById('total-prospectos').textContent = datosAsesor.totalProspectos;
                 document.getElementById('ventas-mes').textContent = datosAsesor.ventasMes;
                 document.getElementById('tasa-conversion').textContent = datosAsesor.tasaConversion + '%';
@@ -601,8 +629,28 @@
 
                 tablaCitas = $('#tabla-citas').DataTable({
                     language: {
-                        url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
+                        decimal: ",",
+                        thousands: ".",
+                        processing: "Procesando...",
+                        lengthMenu: "Mostrar _MENU_",
+                        zeroRecords: "No se encontraron resultados",
+                        emptyTable: "Sin datos disponibles",
+                        info: "Mostrando _START_-_END_ de _TOTAL_ registros",
+                        infoEmpty: "Mostrando 0-0 de 0 registros",
+                        infoFiltered: "(filtrado de _MAX_ totales)",
+                        search: "",
+                        searchPlaceholder: "Buscar por marca, modelo...",
+                        loadingRecords: "Cargando...",
+                        paginate: {
+                            first: '<i class="fas fa-angle-double-left"></i>',
+                            last: '<i class="fas fa-angle-double-right"></i>',
+                            next: '<i class="fas fa-chevron-right"></i>',
+                            previous: '<i class="fas fa-chevron-left"></i>'
+                        }
                     },
+                    dom: '<"datatable-top"<"datatable-search"f><"datatable-length"l>>' +
+                         'rt' +
+                         '<"datatable-bottom"<"datatable-info"i><"datatable-pagination"p>>',
                     pageLength: 10,
                     responsive: true
                 });
@@ -1033,35 +1081,40 @@
                 window.location.href = '/logout';
             }, 1000);
         }
-        // Menú móvil
+        // Menú móvil (drawer mobile-sidebar — patrón portado de perfil-gestor)
         document.addEventListener('DOMContentLoaded', function () {
             const menuToggle = document.getElementById('menuToggle');
-            const sidebar = document.getElementById('sidebar');
-            const sidebarOverlay = document.getElementById('sidebarOverlay');
+            const menuIcon = document.getElementById('menuIcon');
+            const mobileSidebar = document.getElementById('mobileSidebar');
+            const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
+            const mobileSidebarClose = document.getElementById('mobileSidebarClose');
 
             function openSidebar() {
-                sidebar.classList.add('mobile-open');
-                sidebarOverlay.classList.add('active');
+                mobileSidebar.classList.add('active');
+                mobileMenuOverlay.classList.add('active');
+                menuIcon.classList.replace('fa-bars', 'fa-times');
                 document.body.style.overflow = 'hidden';
             }
 
             function closeSidebar() {
-                sidebar.classList.remove('mobile-open');
-                sidebarOverlay.classList.remove('active');
+                mobileSidebar.classList.remove('active');
+                mobileMenuOverlay.classList.remove('active');
+                menuIcon.classList.replace('fa-times', 'fa-bars');
                 document.body.style.overflow = 'auto';
             }
 
             menuToggle.addEventListener('click', openSidebar);
-            sidebarOverlay.addEventListener('click', closeSidebar);
+            mobileSidebarClose.addEventListener('click', closeSidebar);
+            mobileMenuOverlay.addEventListener('click', closeSidebar);
 
-            // Cerrar sidebar al hacer clic en un enlace
-            document.querySelectorAll('.side-menu a').forEach(link => {
+            // Cerrar drawer al hacer clic en un enlace
+            document.querySelectorAll('.mobile-sidebar-link').forEach(link => {
                 link.addEventListener('click', closeSidebar);
             });
 
             // Cerrar con tecla ESC
             document.addEventListener('keydown', function (e) {
-                if (e.key === 'Escape' && sidebar.classList.contains('mobile-open')) {
+                if (e.key === 'Escape' && mobileSidebar.classList.contains('active')) {
                     closeSidebar();
                 }
             });

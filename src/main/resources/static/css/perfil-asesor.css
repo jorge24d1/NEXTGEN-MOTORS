@@ -95,6 +95,115 @@ body {
     color: #cbd5e1;
 }
 
+/* Drawer mobile-sidebar — patrón portado de perfil-gestor */
+.mobile-menu-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+.mobile-menu-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.mobile-sidebar {
+    position: fixed;
+    top: 0;
+    left: -300px;
+    width: 280px;
+    height: 100vh;
+    background: white;
+    z-index: 1001;
+    transition: left 0.3s ease;
+    padding: 1.5rem;
+    box-shadow: 5px 0 15px rgba(0, 0, 0, 0.15);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+.dark .mobile-sidebar {
+    background: #1e293b;
+}
+.mobile-sidebar.active {
+    left: 0;
+}
+
+.mobile-sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e2e8f0;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #3b82f6;
+}
+.dark .mobile-sidebar-header {
+    border-bottom-color: #334155;
+    color: #60a5fa;
+}
+.mobile-sidebar-header button {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #475569;
+    cursor: pointer;
+    line-height: 1;
+}
+.dark .mobile-sidebar-header button {
+    color: #cbd5e1;
+}
+
+.mobile-sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+.mobile-sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.875rem 1rem;
+    color: #475569;
+    text-decoration: none;
+    border-radius: 0.75rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+.dark .mobile-sidebar-link {
+    color: #cbd5e1;
+}
+.mobile-sidebar-link:hover {
+    background: #f1f5f9;
+    color: #3b82f6;
+}
+.dark .mobile-sidebar-link:hover {
+    background: #334155;
+    color: #60a5fa;
+}
+.mobile-sidebar-link i {
+    width: 20px;
+    text-align: center;
+    font-size: 1rem;
+}
+
+.logout-link {
+    color: #ef4444 !important;
+    margin-top: auto;
+}
+.logout-link:hover {
+    background: #fef2f2 !important;
+    color: #dc2626 !important;
+}
+.dark .logout-link:hover {
+    background: rgba(239, 68, 68, 0.1) !important;
+}
+
 /* CONTENEDOR PRINCIPAL */
 .main-container {
     display: flex;
@@ -146,6 +255,7 @@ body {
 .side-menu a {
     display: flex;
     align-items: center;
+    gap: 0.75rem;
     padding: 1rem;
     color: #475569;
     text-decoration: none;
@@ -276,6 +386,222 @@ th, td {
     border-bottom: 1px solid #334155;
 }
 
+/* Sección "Mis Prospectos" - modo oscuro
+   El HTML usa utilidades Tailwind (bg-white, text-gray-800, etc.) sin
+   variante dark:, así que aquí las sobreescribimos solo dentro de
+   #prospectos para no afectar otras secciones. */
+.dark #prospectos .table-container.bg-white {
+    background-color: #1e293b;
+    border-color: #374151;
+}
+.dark #prospectos h3.text-gray-800 {
+    color: #e2e8f0;
+}
+.dark #prospectos thead.bg-gray-50 {
+    background-color: #0f172a;
+}
+.dark #prospectos thead th.text-gray-500 {
+    color: #cbd5e1;
+}
+.dark #prospectos tbody.bg-white {
+    background-color: #1e293b;
+}
+.dark #prospectos tbody tr:hover {
+    background-color: #334155;
+}
+.dark #prospectos tbody td .text-gray-900 {
+    color: #e2e8f0;
+}
+.dark #prospectos tbody td .text-gray-500 {
+    color: #94a3b8;
+}
+.dark #prospectos tbody td .text-gray-400 {
+    color: #64748b;
+}
+.dark #prospectos tbody.divide-gray-200 > :not([hidden]) ~ :not([hidden]),
+.dark #prospectos table.divide-gray-200 > :not([hidden]) ~ :not([hidden]) {
+    border-color: #334155;
+}
+
+/* Sección "Mis Citas" (#agenda) */
+.dark #agenda #filtro-estado.bg-white {
+    background-color: #374151;
+    color: #ffffff;
+    border-color: #4b5563;
+}
+.dark #agenda tbody.bg-white {
+    background-color: #1f2937;
+}
+.dark #agenda tbody tr:hover {
+    background-color: #374151;
+}
+.dark #agenda tbody td.text-gray-900 {
+    color: #ffffff;
+}
+.dark #agenda tbody.divide-gray-200 > :not([hidden]) ~ :not([hidden]) {
+    border-color: #374151;
+}
+
+/* DataTables widgets de la tabla de citas — emula la UI custom del gestor
+   (buscador con icono, selector "Mostrar", info y paginación con chevrons).
+   La inicialización JS usa `dom` para envolver los widgets en estos wrappers. */
+
+/* Top: búsqueda a la izquierda + "Mostrar" a la derecha */
+#tabla-citas_wrapper .datatable-top {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+@media (min-width: 640px) {
+    #tabla-citas_wrapper .datatable-top {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+}
+
+/* Bottom: panel redondeado gris con info a la izquierda y paginación a la derecha */
+#tabla-citas_wrapper .datatable-bottom {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+    margin-top: 1.5rem;
+    background-color: #f9fafb;
+    border-radius: 0.5rem;
+}
+.dark #tabla-citas_wrapper .datatable-bottom {
+    background-color: #1f2937;
+}
+@media (min-width: 640px) {
+    #tabla-citas_wrapper .datatable-bottom {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+}
+
+#tabla-citas_wrapper .datatable-info {
+    flex: 0 0 auto;
+}
+#tabla-citas_wrapper .datatable-pagination {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+#tabla-citas_wrapper .dataTables_length,
+#tabla-citas_wrapper .dataTables_filter {
+    margin-bottom: 0.75rem;
+    color: #6b7280;
+    font-size: 0.875rem;
+}
+.dark #tabla-citas_wrapper .dataTables_length,
+.dark #tabla-citas_wrapper .dataTables_filter {
+    color: #9ca3af;
+}
+
+#tabla-citas_wrapper .dataTables_length select,
+#tabla-citas_wrapper .dataTables_filter input {
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.5rem;
+    border: 1px solid #d1d5db;
+    background-color: #ffffff;
+    color: #1f2937;
+    font-size: 0.875rem;
+    margin: 0 0.5rem;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.dark #tabla-citas_wrapper .dataTables_length select,
+.dark #tabla-citas_wrapper .dataTables_filter input {
+    background-color: #374151;
+    border-color: #4b5563;
+    color: #ffffff;
+}
+
+#tabla-citas_wrapper .dataTables_length select:focus,
+#tabla-citas_wrapper .dataTables_filter input:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+#tabla-citas_wrapper .dataTables_filter {
+    position: relative;
+}
+
+#tabla-citas_wrapper .dataTables_filter input {
+    width: 16rem;
+    padding-left: 2.25rem;
+}
+
+#tabla-citas_wrapper .dataTables_filter::before {
+    content: "\f002";
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    position: absolute;
+    left: 1.25rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #9ca3af;
+    pointer-events: none;
+    z-index: 1;
+    font-size: 0.875rem;
+}
+
+#tabla-citas_wrapper .dataTables_info,
+#tabla-citas_wrapper .dataTables_paginate {
+    margin-top: 1rem;
+    color: #6b7280;
+    font-size: 0.875rem;
+    padding-top: 0.5rem;
+}
+.dark #tabla-citas_wrapper .dataTables_info,
+.dark #tabla-citas_wrapper .dataTables_paginate {
+    color: #9ca3af;
+}
+
+#tabla-citas_wrapper .dataTables_paginate .paginate_button {
+    padding: 0.5rem 0.75rem !important;
+    border-radius: 0.5rem !important;
+    border: 1px solid #d1d5db !important;
+    background: transparent !important;
+    color: #6b7280 !important;
+    margin: 0 0.125rem !important;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.dark #tabla-citas_wrapper .dataTables_paginate .paginate_button {
+    border-color: #4b5563 !important;
+    color: #9ca3af !important;
+}
+
+#tabla-citas_wrapper .dataTables_paginate .paginate_button:hover {
+    background: #f3f4f6 !important;
+    color: #1f2937 !important;
+    border-color: #d1d5db !important;
+}
+.dark #tabla-citas_wrapper .dataTables_paginate .paginate_button:hover {
+    background: #374151 !important;
+    color: #ffffff !important;
+    border-color: #4b5563 !important;
+}
+
+#tabla-citas_wrapper .dataTables_paginate .paginate_button.current,
+#tabla-citas_wrapper .dataTables_paginate .paginate_button.current:hover {
+    background: #3b82f6 !important;
+    color: #ffffff !important;
+    border-color: #3b82f6 !important;
+}
+
+#tabla-citas_wrapper .dataTables_paginate .paginate_button.disabled,
+#tabla-citas_wrapper .dataTables_paginate .paginate_button.disabled:hover {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: transparent !important;
+}
+
 /* BOTONES */
 .btn-asesor {
     background: linear-gradient(135deg, #3b82f6, #1d4ed8);
@@ -323,46 +649,24 @@ th, td {
         padding: 1rem;
     }
 
-    .nav-links {
-        display: none;
-    }
-
     .menu-toggle {
-        display: block;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1002;
     }
 
     #sidebar {
-        transform: translateX(-100%);
-    }
-
-    #sidebar.mobile-open {
-        transform: translateX(0);
-    }
-
-    .sidebar-overlay {
-        display: block;
-        opacity: 0;
-        visibility: hidden;
-        transition: all 0.3s ease;
-    }
-
-    .sidebar-overlay.active {
-        opacity: 1;
-        visibility: visible;
+        display: none !important;
     }
 
     main {
-        margin-left: 0;
+        margin-left: 0 !important;
         padding: 1rem;
     }
 
     .main-container {
         margin-top: 60px;
-    }
-
-    #sidebar {
-        top: 60px;
-        height: calc(100vh - 60px);
     }
 }
 
