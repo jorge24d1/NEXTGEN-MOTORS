@@ -27,7 +27,8 @@ document.addEventListener('DOMContentLoaded', function() {
         addBotMessage('¡Hola! Bienvenido al concesionario . ¿En qué puedo ayudarte hoy?', [
             { text: 'Vehículos disponibles', value: 'vehiculos' },
             { text: 'Agendar cita', value: 'agendar' },
-            { text: 'Contactar asesor', value: 'asesor' }
+            { text: 'Contactar asesor', value: 'asesor' },
+            { text: 'Busca tu vehiculo ideal', value: 'ideal' }
         ]);
         resetInactivityTimer();
     }
@@ -72,7 +73,8 @@ document.addEventListener('DOMContentLoaded', function() {
         addBotMessage('¡Hola! Bienvenido al concesionario. ¿En qué puedo ayudarte hoy?', [
             { text: 'Vehículos disponibles', value: 'vehiculos' },
             { text: 'Agendar cita', value: 'agendar' },
-            { text: 'Contactar asesor', value: 'asesor' }
+            { text: 'Contactar asesor', value: 'asesor' },
+            { text: 'Busca tu vehiculo ideal', value: 'ideal' }
         ]);
     }
 
@@ -103,7 +105,7 @@ document.addEventListener('DOMContentLoaded', function() {
             resetInactivityTimer();
 
             // 1. Intentar procesar como opción de menú fija (opcional)
-            const opcionesFijas = ['vehiculos', 'agendar', 'asesor', 'menu', 'hola'];
+            const opcionesFijas = ['vehiculos', 'agendar', 'asesor', 'menu', 'hola', 'ideal'];
 
             if (opcionesFijas.includes(message.toLowerCase())) {
                 processUserInput(message.toLowerCase());
@@ -125,6 +127,18 @@ document.addEventListener('DOMContentLoaded', function() {
             ]);
             return true;
         }
+
+        if (msg === 'cita' || msg === 'citas' || msg === 'agendar' || msg === 'agendar cita' || msg === 'quiero agendar una cita' || msg === 'como agendo una cita' || msg === 'sacar cita' || msg === 'pedir cita') {
+            addBotMessage('¡Por supuesto! Te redirigiré al apartado de citas en un momento para que puedas agendar tu espacio...', [
+                { text: 'Ir a Citas ahora', value: 'cotizar' }
+            ]);
+            setTimeout(() => {
+                window.location.href = '/usuario/cita';
+            }, 1800);
+            return true;
+        }
+
+        //que haces
 
         if (msg === 'gracias' || msg === 'muchas gracias' || msg === 'ok gracias') {
             addBotMessage('¡De nada! Recuerda que estoy aquí 24/7 para ayudarte con tus consultas automotrices. ¿Deseas explorar algo más?', [
@@ -359,6 +373,9 @@ document.addEventListener('DOMContentLoaded', function() {
         else if (input === 'cotizar') {
             window.location.href = '/usuario/cita';
         }
+        else if (input === 'ideal') {
+            window.location.href = '/vehiculo-ideal';
+        }
         else {
             addBotMessage('No entendí tu solicitud. Por favor selecciona una opción del menú:');
             showMainMenu();
@@ -415,7 +432,8 @@ document.addEventListener('DOMContentLoaded', function() {
         addBotMessage('¿Cómo puedo ayudarte hoy?', [
             { text: 'Vehículos disponibles', value: 'vehiculos' },
             { text: 'Agendar cita', value: 'agendar' },
-            { text: 'Contactar asesor', value: 'asesor' }
+            { text: 'Contactar asesor', value: 'asesor' },
+            { text: 'Busca tu vehiculo ideal', value: 'ideal' }
         ]);
     }
 
