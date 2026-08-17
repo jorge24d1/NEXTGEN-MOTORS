@@ -36,3 +36,14 @@ src/main/resources/nextgen-c9f08-firebase-adminsdk-fbsvc-1cf71ae7de.json
 
 src/main/resources/nextgen-c9f08-firebase-adminsdk-fbsvc-1cf71ae7de.json
 .env
+
+### Gradle & Build Outputs ###
+.gradle/
+**/.gradle/
+build/
+**/build/
+bin/
+**/bin/
+*.lock
+*.bin
+
