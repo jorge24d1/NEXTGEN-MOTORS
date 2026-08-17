@@ -156,7 +156,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function esPreguntaPredeterminada(mensaje) {
         const msg = mensaje.toLowerCase().trim();
-        
+
         if (msg.includes('quien eres') || msg.includes('quién eres') || msg.includes('cómo te llamas') || msg.includes('como te llamas')) {
             addBotMessage('Soy Dante, el asesor y asistente virtual de NextGen Motors. Mi objetivo es ayudarte a encontrar el vehículo ideal, resolver dudas y agendar tus citas. ¿En qué te puedo asesorar hoy?', [
                 { text: 'Ir al Inicio', value: 'menu' }
@@ -189,7 +189,7 @@ document.addEventListener('DOMContentLoaded', function() {
             resetChat();
             return true;
         }
-        
+
         return false;
     }
 
@@ -248,7 +248,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ 
+                body: JSON.stringify({
                     mensaje: mensaje,
                     historial: ultimosMensajes
                 })
@@ -284,7 +284,7 @@ document.addEventListener('DOMContentLoaded', function() {
         } catch (error) {
             console.error('Error:', error);
             if (document.body.contains(typingDiv)) typingDiv.remove();
-            
+
             // Si hay un error grave de red, usar el sistema normal de reserva
             addBotMessage('Ha ocurrido un error de conexión, pero aún puedo ayudarte con estas opciones:');
             processUserInput('menu');
@@ -538,7 +538,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         chatMessages.appendChild(container);
         chatMessages.scrollTop = chatMessages.scrollHeight;
-        
+
         // Guardar para memoria de la IA
         const historial = JSON.parse(sessionStorage.getItem('chatMessagesArray') || '[]');
         historial.push({ role: 'user', content: text });
@@ -582,7 +582,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         chatMessages.appendChild(container);
         chatMessages.scrollTop = chatMessages.scrollHeight;
-        
+
         // Guardar para memoria de la IA
         const historial = JSON.parse(sessionStorage.getItem('chatMessagesArray') || '[]');
         historial.push({ role: 'assistant', content: text.replace(/<[^>]*>?/gm, '') });

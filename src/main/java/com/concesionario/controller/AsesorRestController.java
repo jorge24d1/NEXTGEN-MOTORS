@@ -38,7 +38,7 @@ public class AsesorRestController {
     private EmailService emailService;
 
     @Autowired
-    private NotificationService notificationService;
+    private NotificacionService notificacionService;
 
     @GetMapping("/prospectos")
     public List<ProspectoDTO> obtenerProspectos(Principal principal) {
@@ -228,7 +228,7 @@ public class AsesorRestController {
                         mensaje = "Tu cita para el " + nombreVehiculo + " ahora está: " + estado + ".";
                 }
 
-                notificationService.enviarNotificacion(cita.getUsuario().getId(), titulo, mensaje);
+                notificacionService.enviarNotificacion(cita.getUsuario().getId(), titulo, mensaje);
             }
 
             return ResponseEntity.ok("OK");
@@ -269,7 +269,7 @@ public class AsesorRestController {
                     nombreVehiculo = cita.getVehiculo().getMarca() + " " + cita.getVehiculo().getModelo();
                 }
 
-                notificationService.enviarNotificacion(
+                notificacionService.enviarNotificacion(
                         cita.getUsuario().getId(),
                         "¡Fecha Asignada! 🗓️📍",
                         "Hemos programado tu cita para ver el " + nombreVehiculo + " el día " + fecha + " de "
@@ -293,7 +293,7 @@ public class AsesorRestController {
 
             // 🔔 NOTIFICACIÓN PUSH PERSONALIZADA
             if (cita.getUsuario() != null) {
-                notificationService.enviarNotificacion(
+                notificacionService.enviarNotificacion(
                         cita.getUsuario().getId(),
                         "Nuevo Mensaje del Asesor 💬",
                         "Tienes un nuevo comentario sobre tu cita: \""

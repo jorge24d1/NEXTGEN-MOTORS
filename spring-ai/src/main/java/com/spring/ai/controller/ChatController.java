@@ -7,16 +7,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Optional;
+
 @RestController
 @RequestMapping("/mcp")
 public class ChatController {
 
     private final ChatClient chatClient;
 
-    public ChatController(ChatClient.Builder chatClientBuilder, ToolCallbackProvider toolCallbackProvider) {
-        this.chatClient = chatClientBuilder.defaultToolCallbacks(toolCallbackProvider)
-                //.defaultAdvisors(new SimpleLoggerAdvisor())
-                .build();
+    public ChatController(ChatClient.Builder chatClientBuilder, Optional<ToolCallbackProvider> toolCallbackProvider) {
+        ChatClient.Builder builder = chatClientBuilder;
+        if (toolCallbackProvider.isPresent()) {
+            builder = builder.defaultToolCallbacks(toolCallbackProvider.get());
+        }
+        this.chatClient = builder.build();
     }
 
     @GetMapping("/postgre")

@@ -1,6 +1,6 @@
 package com.concesionario.controller;
 
-import com.concesionario.service.NotificationService;
+import com.concesionario.service.NotificacionService;
 import com.concesionario.repository.UsuarioRepository;
 import com.concesionario.model.Usuario;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +14,7 @@ import java.util.HashMap;
 public class DiagnosticController {
 
     @Autowired
-    private NotificationService notificationService;
+    private NotificacionService notificacionService;
 
     @Autowired
     private UsuarioRepository usuarioRepository;
@@ -36,7 +36,7 @@ public class DiagnosticController {
                 return ResponseEntity.badRequest().body("El usuario existe pero NO tiene Token FCM registrado.");
             }
 
-            notificationService.enviarNotificacion(usuario.getId(), "Test de Diagnóstico", "Si lees esto, las notificaciones funcionan ✅");
+            notificacionService.enviarNotificacion(usuario.getId(), "Test de Diagnóstico", "Si lees esto, las notificaciones funcionan ✅");
             
             Map<String, String> response = new HashMap<>();
             response.put("status", "Enviado");

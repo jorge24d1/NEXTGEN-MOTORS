@@ -50,9 +50,7 @@ public class AdminController {
     @Autowired
     private CitaService citaService;
     @Autowired
-    private NotificacionService notificacionService; // DB Interna
-    @Autowired
-    private NotificationService notificationService; // Push Firebase (Nuevo)
+    private NotificacionService notificacionService; // Servicio unificado (DB Interna + Push)
     @Autowired
     private TrabajadorRepository trabajadorRepository;
     @Autowired
@@ -419,7 +417,7 @@ public class AdminController {
 
         // 🔔 NOTIFICACIÓN PUSH
         if (cita.getUsuario() != null) {
-            notificationService.enviarNotificacion(
+            notificacionService.enviarNotificacion(
                     cita.getUsuario().getId(),
                     "Actualización de Cita",
                     "El administrador cambió el estado de tu cita a: " + estado);
@@ -454,7 +452,7 @@ public class AdminController {
 
         // 🔔 NOTIFICACIÓN PUSH
         if (cita.getUsuario() != null) {
-            notificationService.enviarNotificacion(
+            notificacionService.enviarNotificacion(
                     cita.getUsuario().getId(),
                     "Cita Programada",
                     "El administrador ha programado tu cita para el: " + fecha + " a las " + horaInicio);
@@ -483,7 +481,7 @@ public class AdminController {
 
         // 🔔 NOTIFICACIÓN PUSH
         if (cita.getUsuario() != null) {
-            notificationService.enviarNotificacion(
+            notificacionService.enviarNotificacion(
                     cita.getUsuario().getId(),
                     "Nueva Nota en tu Cita",
                     "Nota del administrador: " + (notas.length() > 50 ? notas.substring(0, 47) + "..." : notas));
