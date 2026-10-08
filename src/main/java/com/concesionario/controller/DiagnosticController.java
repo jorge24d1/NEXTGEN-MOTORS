@@ -1,6 +1,6 @@
 package com.concesionario.controller;
 
-import com.concesionario.service.NotificacionService;
+import com.concesionario.service.NotificationService;
 import com.concesionario.repository.UsuarioRepository;
 import com.concesionario.model.Usuario;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +14,7 @@ import java.util.HashMap;
 public class DiagnosticController {
 
     @Autowired
-    private NotificacionService notificacionService;
+    private NotificationService notificationService;
 
     @Autowired
     private UsuarioRepository usuarioRepository;
@@ -36,7 +36,7 @@ public class DiagnosticController {
                 return ResponseEntity.badRequest().body("El usuario existe pero NO tiene Token FCM registrado.");
             }
 
-            notificacionService.enviarNotificacion(usuario.getId(), "Test de Diagnóstico", "Si lees esto, las notificaciones funcionan ✅");
+            notificationService.enviarNotificacion(usuario.getId(), "Test de Diagnóstico", "Si lees esto, las notificaciones funcionan ✅");
             
             Map<String, String> response = new HashMap<>();
             response.put("status", "Enviado");
@@ -44,23 +44,6 @@ public class DiagnosticController {
             response.put("token_full", fcmToken);
             
             return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("Error: " + e.getMessage());
-        }
-    }
-    @Autowired
-    private com.concesionario.service.AzureHubService azureHubService;
-
-    // Probar envío crudo (Raw Payload) para depurar formato
-    @PostMapping("/send-raw")
-    public ResponseEntity<?> sendRawNotification(@RequestParam String token, @RequestBody String jsonBody) {
-        try {
-            System.out.println("Testing Raw Payload to: " + token);
-            System.out.println("Body: " + jsonBody);
-            
-            azureHubService.sendNotification(jsonBody, token);
-            
-            return ResponseEntity.ok("Enviado (Raw). Verifica tu celular.");
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body("Error: " + e.getMessage());
         }

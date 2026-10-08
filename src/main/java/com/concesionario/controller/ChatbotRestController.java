@@ -3,6 +3,8 @@ package com.concesionario.controller;
 import com.concesionario.service.ChatbotService;
 import com.concesionario.repository.VehiculoRepository;
 import com.concesionario.model.Vehiculo;
+import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.tool.ToolCallbackProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +14,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -21,10 +24,24 @@ public class ChatbotRestController {
 
     @Autowired
     private ChatbotService chatbotService;
-    
+
     @Autowired
     private VehiculoRepository vehiculoRepository;
 
+    private final ChatClient chatClient;
+
+    public ChatbotRestController(ChatClient.Builder chatClientBuilder,
+                                 Optional<ToolCallbackProvider> toolCallbackProvider) {
+        ChatClient.Builder builder = chatClientBuilder;
+        if (toolCallbackProvider.isPresent()) {
+            builder = builder.defaultToolCallbacks(toolCallbackProvider.get());
+        }
+        this.chatClient = builder.build();
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // Endpoint del chatbot principal (Dante) con historial
+    // ─────────────────────────────────────────────────────────────
     @PostMapping("/mensaje")
     public ResponseEntity<?> recibirMensaje(@RequestBody Map<String, Object> request, Authentication authentication) {
         try {
@@ -35,13 +52,13 @@ public class ChatbotRestController {
                     .anyMatch(a -> a.getAuthority().equals("ROLE_ADMINISTRADOR"));
 
             String respuestaIA = chatbotService.analizarYResponder(mensaje, historial, isAdmin);
-            
+
             List<Vehiculo> recomendados = new ArrayList<>();
-            
+
             // Buscar todos los [[ID: xxx]] generados por la IA
             Pattern pattern = Pattern.compile("\\[\\[ID:\\s*([^\\]]+)\\]\\]");
             Matcher matcher = pattern.matcher(respuestaIA);
-            
+
             while (matcher.find()) {
                 String id = matcher.group(1).trim();
                 vehiculoRepository.findById(id).ifPresent(vehiculo -> {
@@ -51,13 +68,13 @@ public class ChatbotRestController {
                     }
                 });
             }
-            
+
             // Limpiar la respuesta para que el usuario no vea los [[ID: xxx]]
             respuestaIA = matcher.replaceAll("");
 
             Map<String, Object> responseMap = new HashMap<>();
-            responseMap.put("respuesta", respuestaIA.trim()); // trim para quitar espacios extra
-            
+            responseMap.put("respuesta", respuestaIA.trim());
+
             if (!recomendados.isEmpty()) {
                 responseMap.put("vehiculosRecomendados", recomendados);
             }
@@ -72,4 +89,20 @@ public class ChatbotRestController {
             return ResponseEntity.internalServerError().body(Map.of("respuesta", "Lo siento, Dante tuvo un error al pensar. Detalles: " + e.getMessage()));
         }
     }
-}
+
+    // ─────────────────────────────────────────────────────────────
+    // Endpoint MCP: chat directo con herramientas (migrado de spring-ai)
+    // ─────────────────────────────────────────────────────────────
+    @GetMapping("/mcp")
+    public ResponseEntity<String> mcpChat(@RequestParam("message") String message) {
+        try {
+            String respuesta = chatClient.prompt()
+                    .user(message)
+                    .call()
+                    .content();
+            return ResponseEntity.ok(respuesta);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Error al procesar mensaje MCP: " + e.getMessage());
+        }
+    }
+}

@@ -1,21 +1,20 @@
 @echo off
 echo ==================================================
-echo   INICIANDO SISTEMA INTEGRADO NEXTGEN-MOTORS
+echo   INICIANDO NEXTGEN-MOTORS (SISTEMA UNIFICADO)
 echo ==================================================
 echo.
-
-echo [1/2] Iniciando Servidor Principal (Puerto 8080)...
-start "NextGen Main" cmd /k "mvnw spring-boot:run"
-
+echo [1/1] Iniciando servidor principal con MCP + IA...
+echo       - Puerto:        http://localhost:8080
+echo       - Chatbot Dante: /api/chatbot/mensaje
+echo       - MCP endpoint:  /api/chatbot/mcp?message=...
+echo       - MCP servers:   filesystem + dbhub (Docker)
 echo.
-echo [2/2] Iniciando Cerebro de Dante (Puerto 8081)...
-cd spring-ai
-start "Dante AI" cmd /k "gradlew bootRun"
+start "NextGen Motors" cmd /k "mvnw spring-boot:run"
 
 echo.
 echo ==================================================
-echo   AMBOS SERVIDORES ESTAN CARGANDO...
-echo   Dante estara listo en: http://localhost:8081
-echo   Dashboard en: http://localhost:8080
+echo   SERVIDOR CARGANDO...
+echo   Dashboard:    http://localhost:8080
+echo   MCP (Docker): filesystem + dbhub activos
 echo ==================================================
 pause

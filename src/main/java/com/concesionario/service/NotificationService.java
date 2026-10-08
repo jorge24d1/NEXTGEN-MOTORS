@@ -1,56 +1,15 @@
 package com.concesionario.service;
 
-import com.concesionario.model.Cita;
 import com.concesionario.model.Usuario;
-import com.concesionario.repository.CitaRepository;
 import com.concesionario.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
-public class NotificacionService {
-
-    @Autowired
-    private CitaRepository citaRepository;
+public class NotificationService {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
-
-    @Autowired
-    private AzureHubService azureHubService;
-
-    // =============================================
-    // GESTIÓN DE CITAS Y NOTIFICACIONES INTERNAS DB
-    // =============================================
-
-    public long contarCitasNoLeidas() {
-        return citaRepository.countByLeidaFalse();
-    }
-
-    public List<Cita> obtenerCitasNoLeidas() {
-        return citaRepository.findByLeidaFalseOrderByFechaCreacionDesc();
-    }
-
-    public void marcarComoLeida(String id) {
-        citaRepository.findById(id).ifPresent(cita -> {
-            cita.setLeida(true);
-            citaRepository.save(cita);
-        });
-    }
-
-    public void marcarTodasComoLeidas() {
-        List<Cita> citasNoLeidas = citaRepository.findByLeidaFalse();
-        citasNoLeidas.forEach(cita -> cita.setLeida(true));
-        citaRepository.saveAll(citasNoLeidas);
-    }
-
-    // =============================================
-    // ENVÍO DE NOTIFICACIONES PUSH (FIREBASE / AZURE)
-    // =============================================
-
     /**
      * @param userId ID del usuario destinatario
      * @param titulo Título de la notificación
@@ -62,6 +21,14 @@ public class NotificacionService {
             
             if (usuario != null && usuario.getFcmToken() != null && !usuario.getFcmToken().isEmpty()) {
                 
+                // Construir mensaje nativo de FCM en formato JSON
+                // Azure Notification Hubs recibe el payload de FCM y lo reenvía
+                // ==========================================
+                // ENVÍO DIRECTO VIA FIREBASE ADMIN ADD (BYPASS AZURE)
+                // ==========================================
+                
+                // 1. Construir el mensaje V1 usando el SDK oficial
+                // No necesitamos construir JSON manual, el objeto Message lo hace.
                 com.google.firebase.messaging.Message message = com.google.firebase.messaging.Message.builder()
                         .setToken(usuario.getFcmToken())
                         .setNotification(com.google.firebase.messaging.Notification.builder()
@@ -72,6 +39,7 @@ public class NotificacionService {
                         .putData("userId", userId)
                         .build();
 
+                // 2. Enviar directamente a Google
                 String response = com.google.firebase.messaging.FirebaseMessaging.getInstance().send(message);
                 
                 System.out.println("✅ Notificación enviada DIRECTAMENTE vía Firebase SDK. ID: " + response);
@@ -80,7 +48,7 @@ public class NotificacionService {
                 System.out.println("⚠️ Usuario " + userId + " no tiene Token FCM registrado. No se envió notificación.");
             }
         } catch (Exception e) {
-            System.err.println("❌ Error enviando notificación Push: " + e.getMessage());
+            System.err.println("❌ Error enviando notificación Azure: " + e.getMessage());
             e.printStackTrace();
         }
     }

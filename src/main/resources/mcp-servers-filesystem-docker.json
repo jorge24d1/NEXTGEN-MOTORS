@@ -6,7 +6,7 @@
         "run",
         "-i",
         "--rm",
-        "--mount", "type=bind,src=./info,dst=/projects/Desktop",
+        "--mount", "type=bind,src=C:/Users/david/OneDrive/Documentos/Universidad/Semestre8/NEXTGEN-MOTORS/NEXTGEN-MOTORS/info,dst=/projects/Desktop",
         "mcp/filesystem",
         "/projects"
       ]
@@ -18,17 +18,11 @@
         "-i",
         "--rm",
         "--init",
-        "--name", 
-        "dbhub",
-        "--publish", 
-        "9080:9080",
         "bytebase/dbhub",
         "--transport",
         "stdio",
-        "--port", 
-        "9080",
         "--dsn",
-        "mysql://root@host.docker.internal:3306/nextgen_motors"
+        "mysql://upxkqj941jnqg2su:fNQOg6yBbKU9PduLIwq8@bcczt9rqj8aq76acewc3-mysql.services.clever-cloud.com:3306/bcczt9rqj8aq76acewc3"
       ]
     }
   }

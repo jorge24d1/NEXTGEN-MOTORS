@@ -113,7 +113,7 @@ public class AdminController {
             Message message = Message.builder()
                     .setToken(token)
                     .setNotification(Notification.builder()
-                            .setTitle("PRUEBA DESDE AZURE (Hardcoded Key)")
+                            .setTitle("PRUEBA DESDE FIREBASE (Hardcoded Key)")
                             .setBody("Si lees esto, funcionó el fix de la llave 4.")
                             .build())
                     .putData("tipo", "PRUEBA")
