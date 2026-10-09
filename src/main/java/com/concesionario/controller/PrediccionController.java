@@ -132,6 +132,30 @@ public class PrediccionController {
         return "prediccion";
     }
 
+    // ====================================================
+    // ENDPOINT PARA APP MOVIL - Datos del Embudo Predictivo
+    // ====================================================
+    @CrossOrigin(origins = "*")
+    @GetMapping("/api/prediccion/embudo")
+    @ResponseBody
+    public Map<String, Object> getEmbudoData() {
+        List<Usuario> usuarios = usuarioService.findAll();
+        for (Usuario u : usuarios) {
+            calcularDatosDesdeCitas(u);
+        }
+
+        long total = usuarios.size();
+        long conInteres = usuarios.stream().filter(u -> "Si".equals(u.getInteresVehiculo())).count();
+        long citaAprobada = usuarios.stream().filter(u -> "Aprobada".equals(u.getEstadoUltimaCita())).count();
+        long clientePotencial = usuarios.stream().filter(u -> "Si".equals(u.getClientePotencial())).count();
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("total", total);
+        data.put("conInteres", conInteres);
+        data.put("citaAprobada", citaAprobada);
+        data.put("clientePotencial", clientePotencial);
+        return data;
+    }
     private void calcularDatosDesdeCitas(Usuario usuario) {
         var citas = citaRepository.findByUsuarioIdOrderByFechaCreacionDesc(usuario.getId());
 
