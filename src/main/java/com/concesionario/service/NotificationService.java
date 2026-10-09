@@ -10,6 +10,10 @@ public class NotificationService {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private com.concesionario.repository.CitaRepository citaRepository;
+
     /**
      * @param userId ID del usuario destinatario
      * @param titulo Título de la notificación
@@ -51,5 +55,29 @@ public class NotificationService {
             System.err.println("❌ Error enviando notificación Azure: " + e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    public long contarCitasNoLeidas() {
+        return citaRepository.countByLeidaFalse();
+    }
+
+    public java.util.List<com.concesionario.model.Cita> obtenerCitasNoLeidas() {
+        return citaRepository.findByLeidaFalseOrderByFechaCreacionDesc();
+    }
+
+    public void marcarComoLeida(String id) {
+        com.concesionario.model.Cita cita = citaRepository.findById(id).orElse(null);
+        if (cita != null) {
+            cita.setLeida(true);
+            citaRepository.save(cita);
+        }
+    }
+
+    public void marcarTodasComoLeidas() {
+        java.util.List<com.concesionario.model.Cita> citas = citaRepository.findByLeidaFalse();
+        for (com.concesionario.model.Cita cita : citas) {
+            cita.setLeida(true);
+        }
+        citaRepository.saveAll(citas);
     }
 }

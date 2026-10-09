@@ -38,7 +38,7 @@ public class AsesorRestController {
     private EmailService emailService;
 
     @Autowired
-    private NotificacionService notificacionService;
+    private NotificationService notificacionService;
 
     @GetMapping("/prospectos")
     public List<ProspectoDTO> obtenerProspectos(Principal principal) {

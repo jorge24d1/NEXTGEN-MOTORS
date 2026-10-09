@@ -41,7 +41,11 @@ public class UsuarioRestController {
                 Map<String, Object> response = new HashMap<>();
                 response.put("success", true);
                 response.put("userId", usuario.getId());
-                response.put("nombre", usuario.getNombreUser() + " " + usuario.getApellidoUser());
+                
+                String nombre = usuario.getNombreUser() != null ? usuario.getNombreUser() : "";
+                String apellido = usuario.getApellidoUser() != null ? usuario.getApellidoUser() : "";
+                response.put("nombre", (nombre + " " + apellido).trim());
+                
                 response.put("message", "Login exitoso");
                 return ResponseEntity.ok(response);
             } else {
