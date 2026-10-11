@@ -1,0 +1,22 @@
+# =============================================
+# MCP Filesystem Server — HTTP/SSE Mode
+# Basado en @modelcontextprotocol/server-filesystem
+# =============================================
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Instalar el servidor MCP filesystem con soporte SSE
+RUN npm install -g @modelcontextprotocol/server-filesystem
+
+# Directorio que el MCP filesystem puede leer/escribir
+RUN mkdir -p /projects/info
+
+EXPOSE 3001
+
+# Lanzar en modo HTTP/SSE en el puerto 3001
+# El MCP filesystem soporta --transport http desde v0.6+
+CMD ["npx", "-y", "@modelcontextprotocol/server-filesystem", \
+     "--transport", "sse", \
+     "--port", "3001", \
+     "/projects"]

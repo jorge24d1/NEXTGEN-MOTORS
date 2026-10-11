@@ -1,0 +1,91 @@
+# =============================================
+# render.yaml — Blueprint Multi-Servicio
+# NEXTGEN-MOTORS: Spring Boot + MCP (SSE)
+# =============================================
+
+services:
+
+  # ==========================================
+  # SERVICIO 1: Aplicación Principal
+  # ==========================================
+  - type: web
+    name: nextgen-motors
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    region: oregon
+    plan: starter          # $7/mes — sin sleep. Usar 'free' para pruebas.
+    healthCheckPath: /
+    envVars:
+      # ---- Bases de datos ----
+      - key: SPRING_DATA_MONGODB_URI
+        sync: false        # Se define manualmente en el dashboard de Render
+      - key: APP_BASE_URL
+        fromService:
+          name: nextgen-motors
+          type: web
+          property: host
+          envVarPrefix: https://
+
+      # ---- Cloudinary ----
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+
+      # ---- Correo ----
+      - key: MAIL_USERNAME
+        sync: false
+      - key: MAIL_PASSWORD
+        sync: false
+
+      # ---- IA ----
+      - key: GROQ_API_KEY
+        sync: false
+
+      # ---- Google OAuth2 ----
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+
+      # ---- MCP SSE URLs (referencias a los otros servicios) ----
+      - key: MCP_FILESYSTEM_URL
+        fromService:
+          name: mcp-filesystem
+          type: web
+          property: host
+          envVarPrefix: https://
+      - key: MCP_DBHUB_URL
+        fromService:
+          name: mcp-dbhub
+          type: web
+          property: host
+          envVarPrefix: https://
+
+  # ==========================================
+  # SERVICIO 2: MCP Filesystem (SSE)
+  # ==========================================
+  - type: web
+    name: mcp-filesystem
+    runtime: docker
+    dockerfilePath: ./Dockerfile.mcp-filesystem
+    region: oregon
+    plan: free             # 512MB RAM, se duerme en inactividad
+    healthCheckPath: /health
+    envVars: []            # Sin secretos — solo acceso al sistema de archivos
+
+  # ==========================================
+  # SERVICIO 3: MCP DBHub (SSE)
+  # ==========================================
+  - type: web
+    name: mcp-dbhub
+    runtime: docker
+    dockerfilePath: ./Dockerfile.mcp-dbhub
+    region: oregon
+    plan: free             # 512MB RAM, se duerme en inactividad
+    healthCheckPath: /health
+    envVars:
+      - key: DSN
+        sync: false        # mysql://user:pass@host:3306/db — definir en dashboard

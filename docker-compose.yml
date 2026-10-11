@@ -1,9 +1,18 @@
+# =============================================
+# docker-compose.yml — Desarrollo LOCAL
+# NO usar en Render (Render usa render.yaml)
+# =============================================
 services:
+
+  # Aplicación principal (desarrollo)
   app:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
       - "8080:8080"
     volumes:
+      # Acceso al Docker del host para lanzar contenedores MCP stdio
       - /var/run/docker.sock:/var/run/docker.sock
       - ./info:/app/info
     env_file:
@@ -18,3 +27,6 @@ services:
       - MAIL_USERNAME=${MAIL_USERNAME}
       - MAIL_PASSWORD=${MAIL_PASSWORD}
       - GROQ_API_KEY=${GROQ_API_KEY}
+      - APP_BASE_URL=http://localhost:8080
+      # Perfil DEV usa stdio, no SSE
+      - SPRING_PROFILES_ACTIVE=default

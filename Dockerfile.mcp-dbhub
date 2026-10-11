@@ -1,0 +1,13 @@
+# =============================================
+# MCP DBHub Server — HTTP/SSE Mode
+# Bytebase DBHub con soporte SSE nativo
+# =============================================
+FROM bytebase/dbhub:latest
+
+EXPOSE 3002
+
+# DSN de MySQL (Clever Cloud) — inyectado como variable de entorno
+ENV DSN=""
+
+# Lanzar en modo SSE en el puerto 3002
+CMD ["sh", "-c", "/dbhub --transport sse --port 3002 --dsn \"${DSN}\""]
