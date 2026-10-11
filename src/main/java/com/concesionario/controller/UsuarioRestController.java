@@ -149,7 +149,7 @@ public class UsuarioRestController {
                 map.put("estado", cita.getEstado()); // "Pendiente", "Aprobada", "Rechazada"
                 map.put("comentario", cita.getComentario());
                 map.put("notasAdmin", cita.getNotasAdmin());
-                map.put("vehiculo", cita.getNombreVehiculo()); // Ojo: podría ser nulo si viene de objeto Vehiculo
+                map.put("vehiculo", cita.getNombreVehiculo()); 
                 
                 // Si hay objeto vehículo vinculado
                 if(cita.getVehiculo() != null) {
