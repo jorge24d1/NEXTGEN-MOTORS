@@ -1,28 +1,23 @@
 # =============================================
 # MCP DBHub Server — HTTP/SSE Mode
-# supergateway actúa como puente stdio → SSE
-# (dbhub v1.5.0 solo soporta stdio)
+# @bytebase/dbhub es un paquete npm puro (Node.js)
+# No requiere binario Go ni multi-stage
 # =============================================
-
-# Extraer el binario dbhub de la imagen oficial
-FROM bytebase/dbhub:latest AS dbhub-source
-
-# Imagen final: Node.js + supergateway + binario dbhub
 FROM node:20-alpine
 
-# Instalar supergateway (proxy stdio→SSE)
-RUN npm install -g supergateway
+WORKDIR /app
 
-# Copiar el binario dbhub desde la imagen oficial
-COPY --from=dbhub-source /dbhub /usr/local/bin/dbhub
-RUN chmod +x /usr/local/bin/dbhub
+# Instalar supergateway + @bytebase/dbhub desde npm
+# mysql2 viene incluido como dependencia de @bytebase/dbhub
+RUN npm install -g supergateway @bytebase/dbhub
 
 EXPOSE 3002
 
 # DSN se inyecta como variable de entorno en Render
 ENV DSN=""
 
-# supergateway arranca dbhub en stdio internamente y
+# supergateway arranca dbhub (npm) en stdio internamente y
 # expone el protocolo MCP como SSE en el puerto 3002.
 # Usamos sh -c para que $DSN se expanda en runtime.
-ENTRYPOINT ["sh", "-c", "supergateway --port 3002 --stdio \"/usr/local/bin/dbhub --dsn $DSN\""]
+ENTRYPOINT ["sh", "-c", "supergateway --port 3002 --stdio \"dbhub --dsn $DSN\""]
+
