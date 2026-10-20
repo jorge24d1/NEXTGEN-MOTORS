@@ -34,7 +34,7 @@ public class AdminController {
     public AdminController(
             VehiculoService vehiculoService,
             CitaService citaService,
-            NotificacionService notificacionService,
+            NotificationService notificacionService,
             PasswordEncoder passwordEncoder) {
 
         this.vehiculoService = vehiculoService;
@@ -50,7 +50,7 @@ public class AdminController {
     @Autowired
     private CitaService citaService;
     @Autowired
-    private NotificacionService notificacionService; // Servicio unificado (DB Interna + Push)
+    private NotificationService notificacionService; // Servicio unificado (DB Interna + Push)
     @Autowired
     private TrabajadorRepository trabajadorRepository;
     @Autowired

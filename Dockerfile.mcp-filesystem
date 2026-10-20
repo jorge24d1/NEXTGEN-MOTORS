@@ -1,0 +1,23 @@
+# =============================================
+# MCP Filesystem Server — HTTP/SSE Mode
+# supergateway actúa como puente stdio → SSE
+# (el servidor MCP filesystem solo habla stdio)
+# =============================================
+FROM node:20-alpine
+
+WORKDIR /app
+
+# supergateway: proxy stdio→SSE para cualquier servidor MCP
+# @modelcontextprotocol/server-filesystem: el servidor MCP real
+RUN npm install -g supergateway @modelcontextprotocol/server-filesystem
+
+# Directorio que el MCP filesystem puede leer/escribir
+RUN mkdir -p /projects/info
+
+EXPOSE 3001
+
+# supergateway arranca el proceso stdio internamente y
+# expone el protocolo MCP como SSE en el puerto 3001
+CMD ["supergateway", \
+     "--port", "3001", \
+     "--stdio", "npx -y @modelcontextprotocol/server-filesystem /projects"]

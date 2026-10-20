@@ -80,6 +80,7 @@ public class SecurityConfig {
                                 "/auth/**",
                                 "/test/status/**",
                                 "/api/usuario/**",
+                                "/api/prediccion/**",
                                 "/api/n8n/**"
                         ).permitAll()
                         .requestMatchers("/perfil_gestor").hasRole("TRB_GESTOR")

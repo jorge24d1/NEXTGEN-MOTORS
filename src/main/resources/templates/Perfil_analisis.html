@@ -62,27 +62,27 @@
     </nav>
 </div>
 
-    <nav class="mobile-sidebar-nav">
-        <a href="#bienvenida" class="mobile-sidebar-link">
-            <i class="fas fa-home"></i> Dashboard
-        </a>
-        <a href="#analisis-datos" class="mobile-sidebar-link">
-            <i class="fas fa-chart-column"></i> Análisis de Datos
-        </a>
-        <a href="#base-datos" class="mobile-sidebar-link">
-            <i class="fas fa-database"></i> Base de Datos
-        </a>
-        <a href="#reportes" class="mobile-sidebar-link">
-            <i class="fas fa-chart-pie"></i> Reportes
-        </a>
-        <a href="#tendencias" class="mobile-sidebar-link">
-            <i class="fas fa-chart-line"></i> Tendencias
-        </a>
-        <a href="#" onclick="confirmarCerrarSesion()" class="mobile-sidebar-link logout-link">
-            <i class="fas fa-sign-out-alt"></i> Cerrar sesión
-        </a>
-    </nav>
-</div>
+<!--    <nav class="mobile-sidebar-nav">-->
+<!--        <a href="#bienvenida" class="mobile-sidebar-link">-->
+<!--            <i class="fas fa-home"></i> Dashboard-->
+<!--        </a>-->
+<!--        <a href="#analisis-datos" class="mobile-sidebar-link">-->
+<!--            <i class="fas fa-chart-column"></i> Análisis de Datos-->
+<!--        </a>-->
+<!--        <a href="#base-datos" class="mobile-sidebar-link">-->
+<!--            <i class="fas fa-database"></i> Base de Datos-->
+<!--        </a>-->
+<!--        <a href="#reportes" class="mobile-sidebar-link">-->
+<!--            <i class="fas fa-chart-pie"></i> Reportes-->
+<!--        </a>-->
+<!--        <a href="#tendencias" class="mobile-sidebar-link">-->
+<!--            <i class="fas fa-chart-line"></i> Tendencias-->
+<!--        </a>-->
+<!--        <a href="#" onclick="confirmarCerrarSesion()" class="mobile-sidebar-link logout-link">-->
+<!--            <i class="fas fa-sign-out-alt"></i> Cerrar sesión-->
+<!--        </a>-->
+<!--    </nav>-->
+<!--</div>-->
 
 <!-- Contenedor principal -->
 <div class="main-container">
@@ -413,51 +413,51 @@
 <script>
     // Navegación entre secciones - IDÉNTICO AL ORIGINAL
     document.addEventListener('DOMContentLoaded', function() {
-        
+
         //----------- MEJORA MENU HAMBURGUESA -----------
         const menuToggle = document.getElementById('menuToggle');
-const menuIcon = document.getElementById('menuIcon');
-const mobileSidebar = document.getElementById('mobileSidebar');
-const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
-const mobileSidebarClose = document.getElementById('mobileSidebarClose');
+        const menuIcon = document.getElementById('menuIcon');
+        <!--const mobileSidebar = document.getElementById('mobileSidebar');-->
+        const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
+        <!--const mobileSidebarClose = document.getElementById('mobileSidebarClose');-->
 
-function openSidebar() {
-    mobileSidebar.classList.add('active');
-    mobileMenuOverlay.classList.add('active');
-    menuIcon.classList.replace('fa-bars', 'fa-times');
-    document.body.style.overflow = 'hidden';
-}
+        function openSidebar() {
+            <!--    mobileSidebar.classList.add('active');-->
+            mobileMenuOverlay.classList.add('active');
+            menuIcon.classList.replace('fa-bars', 'fa-times');
+            document.body.style.overflow = 'hidden';
+        }
 
-function closeSidebar() {
-    mobileSidebar.classList.remove('active');
-    mobileMenuOverlay.classList.remove('active');
-    menuIcon.classList.replace('fa-times', 'fa-bars');
-    document.body.style.overflow = 'auto';
-}
+        function closeSidebar() {
+            <!--    mobileSidebar.classList.remove('active');-->
+            mobileMenuOverlay.classList.remove('active');
+            menuIcon.classList.replace('fa-times', 'fa-bars');
+            document.body.style.overflow = 'auto';
+        }
 
-menuToggle.addEventListener('click', openSidebar);
-mobileSidebarClose.addEventListener('click', closeSidebar);
-mobileMenuOverlay.addEventListener('click', closeSidebar);
+        menuToggle.addEventListener('click', openSidebar);
+        <!--mobileSidebarClose.addEventListener('click', closeSidebar);-->
+        mobileMenuOverlay.addEventListener('click', closeSidebar);
 
 // Cerrar con ESC
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') closeSidebar();
-});
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeSidebar();
+        });
 
 // Cerrar al hacer click en un link y navegar a la sección
-document.querySelectorAll('.mobile-sidebar-link').forEach(link => {
-    link.addEventListener('click', function() {
-        if (this.getAttribute('href').startsWith('#')) {
-            closeSidebar();
+        document.querySelectorAll('.mobile-sidebar-link').forEach(link => {
+            link.addEventListener('click', function() {
+                if (this.getAttribute('href').startsWith('#')) {
+                    closeSidebar();
 
-            // Navegar a la sección correcta
-            const targetId = this.getAttribute('href').substring(1);
-            document.querySelectorAll('main section').forEach(s => s.style.display = 'none');
-            const target = document.getElementById(targetId);
-            if (target) target.style.display = 'block';
-        }
-    });
-});
+                    // Navegar a la sección correcta
+                    const targetId = this.getAttribute('href').substring(1);
+                    document.querySelectorAll('main section').forEach(s => s.style.display = 'none');
+                    const target = document.getElementById(targetId);
+                    if (target) target.style.display = 'block';
+                }
+            });
+        });
 
         document.querySelectorAll('main section').forEach(section => {
             section.style.display = 'none';
@@ -490,28 +490,28 @@ document.querySelectorAll('.mobile-sidebar-link').forEach(link => {
     });
 
     // Funciones para el modal de cierre de sesión
-function confirmarCerrarSesion() {
-    const modal = document.getElementById('logoutModal');
-    modal.classList.add('active');
-}
+    function confirmarCerrarSesion() {
+        const modal = document.getElementById('logoutModal');
+        modal.classList.add('active');
+    }
 
-function cancelarCerrarSesion() {
-    const modal = document.getElementById('logoutModal');
-    modal.classList.remove('active');
-}
+    function cancelarCerrarSesion() {
+        const modal = document.getElementById('logoutModal');
+        modal.classList.remove('active');
+    }
 
-function cerrarSesion() {
-    // Mostrar loading en el botón
-    const confirmButton = document.querySelector('.modal-btn-confirm');
-    const originalText = confirmButton.innerHTML;
-    confirmButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Cerrando...';
-    confirmButton.disabled = true;
+    function cerrarSesion() {
+        // Mostrar loading en el botón
+        const confirmButton = document.querySelector('.modal-btn-confirm');
+        const originalText = confirmButton.innerHTML;
+        confirmButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Cerrando...';
+        confirmButton.disabled = true;
 
-    // Redirigir al logout después de un breve delay
-    setTimeout(() => {
-        window.location.href = '/logout';
-    }, 1000);
-}
+        // Redirigir al logout después de un breve delay
+        setTimeout(() => {
+            window.location.href = '/logout';
+        }, 1000);
+    }
 </script>
 <script>
     // ===================== VARIABLES GLOBALES =====================
@@ -683,9 +683,9 @@ function cerrarSesion() {
 
     // ===================== TEXTO MEJORADO PARA PREDICCIÓN =====================
     function getPrediccionHtml(potencial, interes) {
-    // Si ya tiene predicción - CON FONDO VERDE/ROJO
-    if (potencial === 'Si') {
-        return `
+        // Si ya tiene predicción - CON FONDO VERDE/ROJO
+        if (potencial === 'Si') {
+            return `
             <div class="flex flex-col items-center gap-1">
                 <span class="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-3 py-1.5 rounded-full font-semibold text-sm border border-green-300 dark:border-green-700">
                     Potencial
@@ -693,9 +693,9 @@ function cerrarSesion() {
                 <span class="text-xs text-gray-500 dark:text-gray-400">${interes === 'Si' ? 'Con interés' : 'Sin interés'}</span>
             </div>
         `;
-    }
-    if (potencial === 'No') {
-    return `
+        }
+        if (potencial === 'No') {
+            return `
         <div class="flex flex-col items-center gap-1">
             <span class="bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 px-3 py-1.5 rounded-full font-semibold text-sm border border-red-300 dark:border-red-700" style="display: inline-block; min-width: 120px; max-width: 120px; white-space: nowrap;">
                 No Potencial
@@ -703,10 +703,10 @@ function cerrarSesion() {
             <span class="text-xs text-gray-500 dark:text-gray-400">${interes === 'Si' ? 'Con interés' : 'Sin interés'}</span>
         </div>
     `;
-}
+        }
 
-    // Si no tiene predicción aún
-    return `
+        // Si no tiene predicción aún
+        return `
         <div class="flex flex-col items-center gap-1">
             <span class="bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 px-3 py-1.5 rounded-full font-semibold text-sm border border-yellow-300 dark:border-yellow-700">
                 ⏳ Por analizar
@@ -714,48 +714,48 @@ function cerrarSesion() {
             <span class="text-xs text-gray-500 dark:text-gray-400">${interes === 'Si' ? 'Con interés' : 'Sin interés'}</span>
         </div>
     `;
-}
+    }
 
     // ===================== FUNCIÓN DE PREDICCIÓN =====================
     async function predecirUsuario(usuarioId, boton) {
-    // FIJAR el ancho del botón ANTES de cambiar el texto
-    const anchoOriginal = boton.offsetWidth;
-    boton.style.width = anchoOriginal + 'px';
-    boton.style.minWidth = anchoOriginal + 'px';
+        // FIJAR el ancho del botón ANTES de cambiar el texto
+        const anchoOriginal = boton.offsetWidth;
+        boton.style.width = anchoOriginal + 'px';
+        boton.style.minWidth = anchoOriginal + 'px';
 
-    // Cambiar a spinner SIN texto para que no se expanda
-    boton.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-    boton.disabled = true;
+        // Cambiar a spinner SIN texto para que no se expanda
+        boton.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        boton.disabled = true;
 
-    try {
-        const formData = new FormData();
-        formData.append('usuarioId', usuarioId);
+        try {
+            const formData = new FormData();
+            formData.append('usuarioId', usuarioId);
 
-        const response = await fetch('/predecir-usuario', {
-            method: 'POST',
-            body: formData
-        });
+            const response = await fetch('/predecir-usuario', {
+                method: 'POST',
+                body: formData
+            });
 
-        const data = await response.json();
+            const data = await response.json();
 
-        if (data.success) {
-            mostrarResultadoPrediccion(data.usuario);
-            actualizarUsuarioEnLista(data.usuario);
-        } else {
-            alert('Error: ' + data.error);
+            if (data.success) {
+                mostrarResultadoPrediccion(data.usuario);
+                actualizarUsuarioEnLista(data.usuario);
+            } else {
+                alert('Error: ' + data.error);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error al realizar la predicción');
+        } finally {
+            // RESTAURAR texto original
+            boton.innerHTML = '<i class="fas fa-bolt mr-1"></i>Analizar';
+            boton.disabled = false;
+            // Quitar el ancho fijo
+            boton.style.width = '';
+            boton.style.minWidth = '';
         }
-    } catch (error) {
-        console.error('Error:', error);
-        alert('Error al realizar la predicción');
-    } finally {
-        // RESTAURAR texto original
-        boton.innerHTML = '<i class="fas fa-bolt mr-1"></i>Analizar';
-        boton.disabled = false;
-        // Quitar el ancho fijo
-        boton.style.width = '';
-        boton.style.minWidth = '';
     }
-}
 
     // ===================== ACTUALIZAR USUARIO EN LISTA =====================
     function actualizarUsuarioEnLista(usuarioActualizado) {

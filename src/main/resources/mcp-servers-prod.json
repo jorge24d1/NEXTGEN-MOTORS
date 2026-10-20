@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "filesystem": {
+      "type": "sse",
+      "url": "${MCP_FILESYSTEM_URL}/sse"
+    },
+    "dbhub": {
+      "type": "sse",
+      "url": "${MCP_DBHUB_URL}/sse"
+    }
+  }
+}
