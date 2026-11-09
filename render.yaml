@@ -50,6 +50,10 @@ services:
       - key: GOOGLE_CLIENT_SECRET
         sync: false
 
+      # ---- Microservicio de Predicción ML (FastAPI) ----
+      - key: PREDICCION_API_URL
+        sync: false        # Definir en el dashboard de Render: https://tu-modelo-python.onrender.com
+
       # ---- MCP SSE URLs (referencias a los otros servicios) ----
       - key: MCP_FILESYSTEM_URL
         fromService:
