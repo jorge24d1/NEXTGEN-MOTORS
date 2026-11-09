@@ -18,12 +18,29 @@ public class PrediccionService {
     private final RestClient restClient;
     private final String apiUrl;
 
-    public PrediccionService(@Value("${prediccion.api.url:http://localhost:8000}") String apiUrl) {
-        this.apiUrl = apiUrl;
-        this.restClient = RestClient.builder()
-                .baseUrl(apiUrl)
-                .build();
-        log.info("✅ PrediccionService conectado a FastAPI en: {}", apiUrl);
+    public PrediccionService(@Value("${prediccion.api.url:https://python-prediccion.onrender.com}") String apiUrl) {
+        String cleanUrl = apiUrl != null ? apiUrl.trim() : "";
+        if (cleanUrl.startsWith("\"") && cleanUrl.endsWith("\"") && cleanUrl.length() >= 2) {
+            cleanUrl = cleanUrl.substring(1, cleanUrl.length() - 1).trim();
+        }
+        if (cleanUrl.endsWith("/")) {
+            cleanUrl = cleanUrl.substring(0, cleanUrl.length() - 1);
+        }
+        if (cleanUrl.isBlank()) {
+            cleanUrl = "http://localhost:8000";
+        }
+        this.apiUrl = cleanUrl;
+
+        RestClient client = null;
+        try {
+            client = RestClient.builder()
+                    .baseUrl(cleanUrl)
+                    .build();
+            log.info("✅ PrediccionService conectado a FastAPI en: {}", cleanUrl);
+        } catch (Exception e) {
+            log.error("⚠️ [PrediccionService] URL inválida para FastAPI ('{}'): {}. El servicio continuará sin predicciones remotas.", cleanUrl, e.getMessage());
+        }
+        this.restClient = client;
     }
 
     /**
@@ -40,6 +57,11 @@ public class PrediccionService {
     @SuppressWarnings("unchecked")
     public Map<String, Object> consultarApi(double citas, double antiguedad, String estado, String interes, double tiempo,
                                            String asistioCita, String tieneCuotaInicial, String capacidadEndeudamiento, String capacidadFinanciacion) {
+        if (this.restClient == null) {
+            log.warn("⚠️ [PrediccionService] RestClient no inicializado. No se puede consultar FastAPI.");
+            return null;
+        }
+
         try {
             Map<String, Object> body = new HashMap<>();
             body.put("cantidad_citas", citas);
