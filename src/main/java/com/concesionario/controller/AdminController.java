@@ -538,7 +538,7 @@ public class AdminController {
     @GetMapping("/anuncios")
     public String listarAnuncios(Model model) {
         model.addAttribute("anuncios", vehiculoService.obtenerDestacados());
-        return "Admin/Dashboard";
+        return "admin/dashboard";
     }
 
     @PostMapping("/guardar-anuncio")
