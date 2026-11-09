@@ -32,6 +32,13 @@ public class Usuario {
     private String interesVehiculo = "No";
     private Integer tiempoEntreCitas = 0;
 
+    // VARIABLES DE CALIFICACIÓN COMERCIAL Y FINANCIERA (Post-Cita)
+    private String asistioCita = "No";
+    private String tieneCuotaInicial = "No";
+    private Double montoCuotaInicial = 0.0;
+    private String capacidadEndeudamiento = "No";
+    private String capacidadFinanciacion = "No";
+
     // RESULTADO DE PREDICCIÓN
     private String clientePotencial; // Si, No
     private Double probabilidad;
@@ -162,6 +169,47 @@ public class Usuario {
 
     public void setTiempoEntreCitas(Integer tiempoEntreCitas) {
         this.tiempoEntreCitas = tiempoEntreCitas;
+    }
+
+    // Getters y Setters de variables financieras post-cita
+    public String getAsistioCita() {
+        return asistioCita;
+    }
+
+    public void setAsistioCita(String asistioCita) {
+        this.asistioCita = asistioCita;
+    }
+
+    public String getTieneCuotaInicial() {
+        return tieneCuotaInicial;
+    }
+
+    public void setTieneCuotaInicial(String tieneCuotaInicial) {
+        this.tieneCuotaInicial = tieneCuotaInicial;
+    }
+
+    public Double getMontoCuotaInicial() {
+        return montoCuotaInicial;
+    }
+
+    public void setMontoCuotaInicial(Double montoCuotaInicial) {
+        this.montoCuotaInicial = montoCuotaInicial;
+    }
+
+    public String getCapacidadEndeudamiento() {
+        return capacidadEndeudamiento;
+    }
+
+    public void setCapacidadEndeudamiento(String capacidadEndeudamiento) {
+        this.capacidadEndeudamiento = capacidadEndeudamiento;
+    }
+
+    public String getCapacidadFinanciacion() {
+        return capacidadFinanciacion;
+    }
+
+    public void setCapacidadFinanciacion(String capacidadFinanciacion) {
+        this.capacidadFinanciacion = capacidadFinanciacion;
     }
 
     public String getClientePotencial() {

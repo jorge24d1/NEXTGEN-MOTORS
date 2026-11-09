@@ -53,7 +53,11 @@ public class PrediccionController {
                     usuario.getAntiguedadCuenta().doubleValue(),
                     usuario.getEstadoUltimaCita(),
                     usuario.getInteresVehiculo(),
-                    usuario.getTiempoEntreCitas().doubleValue()
+                    usuario.getTiempoEntreCitas().doubleValue(),
+                    usuario.getAsistioCita(),
+                    usuario.getTieneCuotaInicial(),
+                    usuario.getCapacidadEndeudamiento(),
+                    usuario.getCapacidadFinanciacion()
             );
 
             String resultado = (pred != null && pred.get("prediccion") != null) ? String.valueOf(pred.get("prediccion")) : "No";
@@ -64,7 +68,19 @@ public class PrediccionController {
 
             usuario.setClientePotencial(resultado);
             usuario.setProbabilidad(probabilidad);
-            usuario.setObservaciones(resultado.equals("Si") ? "Cliente potencial - Seguimiento recomendado" : "Requiere estrategias adicionales");
+
+            // Observaciones inteligentes según variables financieras
+            String obs;
+            if ("Si".equals(resultado)) {
+                obs = "Cliente potencial confirmado - Seguimiento comercial inmediato para cierre";
+            } else if ("Si".equalsIgnoreCase(usuario.getCapacidadEndeudamiento()) && "No".equalsIgnoreCase(usuario.getCapacidadFinanciacion())) {
+                obs = "Buen historial crediticio pero cuota excede ingresos. Ofrecer vehículo más económico o ampliar plazo (Downselling)";
+            } else if ("No".equalsIgnoreCase(usuario.getTieneCuotaInicial())) {
+                obs = "Sin cuota inicial suficiente (10%). Ofrecer plan de ahorro programado o retomar vehículo usado";
+            } else {
+                obs = "Requiere estrategias comerciales y financieras adicionales";
+            }
+            usuario.setObservaciones(obs);
 
             usuarioService.save(usuario);
 
@@ -102,7 +118,11 @@ public class PrediccionController {
                     usuario.getAntiguedadCuenta().doubleValue(),
                     usuario.getEstadoUltimaCita(),
                     usuario.getInteresVehiculo(),
-                    usuario.getTiempoEntreCitas().doubleValue()
+                    usuario.getTiempoEntreCitas().doubleValue(),
+                    usuario.getAsistioCita(),
+                    usuario.getTieneCuotaInicial(),
+                    usuario.getCapacidadEndeudamiento(),
+                    usuario.getCapacidadFinanciacion()
             );
 
             String resultado = (pred != null && pred.get("prediccion") != null) ? String.valueOf(pred.get("prediccion")) : "No";
@@ -113,7 +133,19 @@ public class PrediccionController {
 
             usuario.setClientePotencial(resultado);
             usuario.setProbabilidad(probabilidad);
-            usuario.setObservaciones(resultado.equals("Si") ? "Cliente potencial - Seguimiento recomendado" : "Requiere estrategias adicionales");
+
+            // Observaciones inteligentes según variables financieras
+            String obs;
+            if ("Si".equals(resultado)) {
+                obs = "Cliente potencial confirmado - Seguimiento comercial inmediato para cierre";
+            } else if ("Si".equalsIgnoreCase(usuario.getCapacidadEndeudamiento()) && "No".equalsIgnoreCase(usuario.getCapacidadFinanciacion())) {
+                obs = "Buen historial crediticio pero cuota excede ingresos. Ofrecer vehículo más económico o ampliar plazo (Downselling)";
+            } else if ("No".equalsIgnoreCase(usuario.getTieneCuotaInicial())) {
+                obs = "Sin cuota inicial suficiente (10%). Ofrecer plan de ahorro programado o retomar vehículo usado";
+            } else {
+                obs = "Requiere estrategias comerciales y financieras adicionales";
+            }
+            usuario.setObservaciones(obs);
 
             usuarioService.save(usuario);
             model.addAttribute("usuarioSeleccionado", usuario);
@@ -169,6 +201,11 @@ public class PrediccionController {
             usuario.setEstadoUltimaCita("Pendiente");
             usuario.setInteresVehiculo("No");
             usuario.setTiempoEntreCitas(0);
+            usuario.setAsistioCita("No");
+            usuario.setTieneCuotaInicial("No");
+            usuario.setCapacidadEndeudamiento("No");
+            usuario.setCapacidadFinanciacion("No");
+            usuario.setMontoCuotaInicial(0.0);
             return;
         }
 
@@ -176,6 +213,13 @@ public class PrediccionController {
 
         var ultimaCita = citas.get(0);
         usuario.setEstadoUltimaCita(ultimaCita.getEstado());
+
+        // Mapeo de evaluación comercial/financiera post-cita
+        usuario.setAsistioCita(ultimaCita.isAsistio() ? "Si" : "No");
+        usuario.setTieneCuotaInicial(Boolean.TRUE.equals(ultimaCita.getTieneCuotaInicial()) ? "Si" : "No");
+        usuario.setCapacidadEndeudamiento(Boolean.TRUE.equals(ultimaCita.getCapacidadEndeudamiento()) ? "Si" : "No");
+        usuario.setCapacidadFinanciacion(Boolean.TRUE.equals(ultimaCita.getCapacidadFinanciacion()) ? "Si" : "No");
+        usuario.setMontoCuotaInicial(ultimaCita.getMontoCuotaInicial() != null ? ultimaCita.getMontoCuotaInicial() : 0.0);
 
         String interes = "No";
         if (citas.size() >= 2 || "Aprobada".equals(ultimaCita.getEstado())) {

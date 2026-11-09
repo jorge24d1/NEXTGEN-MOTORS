@@ -40,6 +40,9 @@ public class AsesorRestController {
     @Autowired
     private NotificationService notificacionService;
 
+    @Autowired
+    private UsuarioService usuarioService;
+
     @GetMapping("/prospectos")
     public List<ProspectoDTO> obtenerProspectos(Principal principal) {
         try {
@@ -163,12 +166,24 @@ public class AsesorRestController {
 
                 // Vehículo
                 String vehiculo = "No especificado";
+                double precioVehiculo = 0.0;
                 if (cita.getVehiculo() != null && cita.getVehiculo().getModelo() != null) {
                     vehiculo = cita.getVehiculo().getMarca() + " " + cita.getVehiculo().getModelo();
+                    precioVehiculo = cita.getVehiculo().getPrecio();
                 } else if (cita.getNombreVehiculo() != null && !cita.getNombreVehiculo().isEmpty()) {
                     vehiculo = cita.getNombreVehiculo();
                 }
                 citaMap.put("vehiculo", vehiculo);
+                citaMap.put("precioVehiculo", precioVehiculo);
+                citaMap.put("cuotaInicialSugerida", precioVehiculo * 0.10); // 10% del vehículo
+
+                // Datos de Calificación Financiera
+                citaMap.put("asistio", cita.isAsistio());
+                citaMap.put("tieneCuotaInicial", cita.getTieneCuotaInicial() != null ? cita.getTieneCuotaInicial() : false);
+                citaMap.put("montoCuotaInicial", cita.getMontoCuotaInicial() != null ? cita.getMontoCuotaInicial() : 0.0);
+                citaMap.put("capacidadEndeudamiento", cita.getCapacidadEndeudamiento() != null ? cita.getCapacidadEndeudamiento() : false);
+                citaMap.put("capacidadFinanciacion", cita.getCapacidadFinanciacion() != null ? cita.getCapacidadFinanciacion() : false);
+                citaMap.put("evaluacionCompletada", cita.isEvaluacionCompletada());
 
                 // Fechas
                 citaMap.put("fechaSolicitud", cita.getFechaCreacion() != null ? cita.getFechaCreacion() : "");
@@ -303,6 +318,62 @@ public class AsesorRestController {
             return ResponseEntity.ok("OK");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/citas/{id}/calificar-financiero")
+    public ResponseEntity<?> calificarFinancieroCita(
+            @PathVariable String id,
+            @RequestParam(defaultValue = "true") boolean asistio,
+            @RequestParam(defaultValue = "false") boolean tieneCuotaInicial,
+            @RequestParam(defaultValue = "0") double montoCuotaInicial,
+            @RequestParam(defaultValue = "false") boolean capacidadEndeudamiento,
+            @RequestParam(defaultValue = "false") boolean capacidadFinanciacion,
+            @RequestParam(required = false) String notas) {
+        try {
+            Cita cita = citaRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Cita no encontrada"));
+
+            cita.setAsistio(asistio);
+            cita.setTieneCuotaInicial(tieneCuotaInicial);
+            cita.setMontoCuotaInicial(montoCuotaInicial);
+            cita.setCapacidadEndeudamiento(capacidadEndeudamiento);
+            cita.setCapacidadFinanciacion(capacidadFinanciacion);
+            cita.setEvaluacionCompletada(true);
+
+            if (asistio) {
+                cita.setEstado("Completada");
+            }
+            if (notas != null && !notas.isBlank()) {
+                cita.setNotasAdmin(notas);
+            }
+
+            citaRepository.save(cita);
+
+            // Si la cita tiene un usuario registrado en el sistema, sincronizamos sus datos de una vez
+            if (cita.getUsuario() != null && cita.getUsuario().getId() != null) {
+                com.concesionario.model.Usuario usuario = usuarioService.findById(cita.getUsuario().getId());
+                if (usuario != null) {
+                    usuario.setAsistioCita(asistio ? "Si" : "No");
+                    usuario.setTieneCuotaInicial(tieneCuotaInicial ? "Si" : "No");
+                    usuario.setMontoCuotaInicial(montoCuotaInicial);
+                    usuario.setCapacidadEndeudamiento(capacidadEndeudamiento ? "Si" : "No");
+                    usuario.setCapacidadFinanciacion(capacidadFinanciacion ? "Si" : "No");
+                    usuario.setEstadoUltimaCita(cita.getEstado());
+                    usuarioService.save(usuario);
+                }
+            }
+
+            return ResponseEntity.ok(Map.of(
+                    "success", true,
+                    "message", "Evaluación comercial y financiera registrada con éxito",
+                    "estado", cita.getEstado()
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of(
+                    "success", false,
+                    "message", "Error al registrar calificación: " + e.getMessage()
+            ));
         }
     }
 

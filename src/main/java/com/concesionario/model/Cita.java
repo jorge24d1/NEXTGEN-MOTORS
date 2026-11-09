@@ -44,6 +44,14 @@ public class Cita {
     private String horaFinCita;
     private String trabajadorNombre;
 
+    // Campos de evaluación post-cita (Asesor comercial)
+    private boolean asistio = false;
+    private Boolean tieneCuotaInicial = false;
+    private Double montoCuotaInicial = 0.0;
+    private Boolean capacidadEndeudamiento = false;
+    private Boolean capacidadFinanciacion = false;
+    private boolean evaluacionCompletada = false;
+
     public String getTrabajadorNombre() {
         return trabajadorNombre;
     }
@@ -272,6 +280,55 @@ public class Cita {
 
     public void setColorVehiculo(String colorVehiculo) {
         this.colorVehiculo = colorVehiculo;
+    }
+
+    // Getters y Setters de Calificación Financiera Post-Cita
+    public boolean isAsistio() {
+        return asistio;
+    }
+
+    public void setAsistio(boolean asistio) {
+        this.asistio = asistio;
+    }
+
+    public Boolean getTieneCuotaInicial() {
+        return tieneCuotaInicial;
+    }
+
+    public void setTieneCuotaInicial(Boolean tieneCuotaInicial) {
+        this.tieneCuotaInicial = tieneCuotaInicial;
+    }
+
+    public Double getMontoCuotaInicial() {
+        return montoCuotaInicial;
+    }
+
+    public void setMontoCuotaInicial(Double montoCuotaInicial) {
+        this.montoCuotaInicial = montoCuotaInicial;
+    }
+
+    public Boolean getCapacidadEndeudamiento() {
+        return capacidadEndeudamiento;
+    }
+
+    public void setCapacidadEndeudamiento(Boolean capacidadEndeudamiento) {
+        this.capacidadEndeudamiento = capacidadEndeudamiento;
+    }
+
+    public Boolean getCapacidadFinanciacion() {
+        return capacidadFinanciacion;
+    }
+
+    public void setCapacidadFinanciacion(Boolean capacidadFinanciacion) {
+        this.capacidadFinanciacion = capacidadFinanciacion;
+    }
+
+    public boolean isEvaluacionCompletada() {
+        return evaluacionCompletada;
+    }
+
+    public void setEvaluacionCompletada(boolean evaluacionCompletada) {
+        this.evaluacionCompletada = evaluacionCompletada;
     }
 
 }

@@ -31,6 +31,15 @@ public class PrediccionService {
      */
     @SuppressWarnings("unchecked")
     public Map<String, Object> consultarApi(double citas, double antiguedad, String estado, String interes, double tiempo) {
+        return consultarApi(citas, antiguedad, estado, interes, tiempo, "No", "No", "No", "No");
+    }
+
+    /**
+     * Consulta el microservicio FastAPI (/predecir) incluyendo las nuevas variables comerciales y financieras.
+     */
+    @SuppressWarnings("unchecked")
+    public Map<String, Object> consultarApi(double citas, double antiguedad, String estado, String interes, double tiempo,
+                                           String asistioCita, String tieneCuotaInicial, String capacidadEndeudamiento, String capacidadFinanciacion) {
         try {
             Map<String, Object> body = new HashMap<>();
             body.put("cantidad_citas", citas);
@@ -38,6 +47,12 @@ public class PrediccionService {
             body.put("estado_ultima_cita", estado);
             body.put("interes_vehiculo", interes);
             body.put("tiempo_entre_citas", tiempo);
+
+            // Nuevas variables post-cita
+            body.put("asistio_cita", asistioCita != null ? asistioCita : "No");
+            body.put("tiene_cuota_inicial", tieneCuotaInicial != null ? tieneCuotaInicial : "No");
+            body.put("capacidad_endeudamiento", capacidadEndeudamiento != null ? capacidadEndeudamiento : "No");
+            body.put("capacidad_financiacion", capacidadFinanciacion != null ? capacidadFinanciacion : "No");
 
             log.info("📡 [PrediccionService] Enviando datos a FastAPI ({}): {}", apiUrl, body);
 
@@ -48,7 +63,7 @@ public class PrediccionService {
                     .retrieve()
                     .body(Map.class);
 
-            log.info(" [PrediccionService] Respuesta recibida de FastAPI: {}", respuesta);
+            log.info("✅ [PrediccionService] Respuesta recibida de FastAPI: {}", respuesta);
             return respuesta;
         } catch (Exception e) {
             log.error("❌ Error al llamar FastAPI ({}/predecir): {}", apiUrl, e.getMessage(), e);

@@ -370,6 +370,111 @@
                 </div>
             </div>
 
+            <!-- MODAL DE CALIFICACIÓN COMERCIAL Y FINANCIERA POST-CITA -->
+            <div id="modal-calificar" class="modal">
+                <div class="modal-content" style="max-width: 580px; border-radius: 16px;">
+                    <span class="close text-2xl cursor-pointer float-right hover:text-gray-600 transition-colors"
+                        onclick="cerrarModal('modal-calificar')">&times;</span>
+                    
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold text-lg">
+                            <i class="fas fa-file-invoice-dollar"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-bold text-gray-900 dark:text-white">Calificación Comercial Post-Cita</h2>
+                            <p class="text-xs text-gray-500">Evaluación del prospecto para el modelo predictivo</p>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta con resumen del Vehículo -->
+                    <div class="p-4 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 mb-5">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <span class="text-xs uppercase tracking-wider text-gray-500 font-bold">Vehículo de Interés</span>
+                                <h4 id="calif-vehiculo-nombre" class="font-bold text-gray-900 dark:text-white text-base">Cargando...</h4>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-xs uppercase tracking-wider text-gray-500 font-bold">Precio Catálogo</span>
+                                <div id="calif-vehiculo-precio" class="font-extrabold text-blue-600 dark:text-blue-400 text-base">$0</div>
+                            </div>
+                        </div>
+                        <div class="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700 flex justify-between items-center text-xs">
+                            <span class="text-gray-600 dark:text-gray-300 font-medium">Cuota Inicial Sugerida (10% mínimo):</span>
+                            <span id="calif-cuota-sugerida" class="font-bold text-emerald-600 dark:text-emerald-400">$0</span>
+                        </div>
+                    </div>
+
+                    <!-- Formulario de Evaluación -->
+                    <div class="space-y-4">
+                        <!-- Toggle Asistencia -->
+                        <div class="flex items-center justify-between p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition">
+                            <div>
+                                <label for="calif-asistio" class="font-bold text-sm text-gray-800 dark:text-gray-200 cursor-pointer">
+                                    <i class="fas fa-user-check text-blue-500 mr-2"></i>¿El cliente asistió a la cita?
+                                </label>
+                                <p class="text-xs text-gray-500">Marca si se llevó a cabo la reunión presencial/virtual.</p>
+                            </div>
+                            <input type="checkbox" id="calif-asistio" class="w-5 h-5 text-blue-600 rounded focus:ring-blue-500 cursor-pointer" checked>
+                        </div>
+
+                        <!-- Toggle Cuota Inicial -->
+                        <div class="p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition space-y-2">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <label for="calif-cuota-inicial" class="font-bold text-sm text-gray-800 dark:text-gray-200 cursor-pointer">
+                                        <i class="fas fa-wallet text-emerald-500 mr-2"></i>¿Dispone de la cuota inicial (10%+)?
+                                    </label>
+                                    <p class="text-xs text-gray-500">Tiene ahorros o vehículo como parte de pago.</p>
+                                </div>
+                                <input type="checkbox" id="calif-cuota-inicial" class="w-5 h-5 text-emerald-600 rounded focus:ring-emerald-500 cursor-pointer">
+                            </div>
+                            <div class="pt-2">
+                                <label class="text-xs text-gray-500 font-semibold">Monto aproximado que ofrece el cliente ($ COP):</label>
+                                <input type="number" id="calif-monto-cuota" class="form-control text-sm py-1.5" placeholder="Ej: 15000000" min="0">
+                            </div>
+                        </div>
+
+                        <!-- Toggle Capacidad de Endeudamiento -->
+                        <div class="flex items-center justify-between p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition">
+                            <div>
+                                <label for="calif-endeudamiento" class="font-bold text-sm text-gray-800 dark:text-gray-200 cursor-pointer">
+                                    <i class="fas fa-credit-card text-purple-500 mr-2"></i>¿Buen historial / Capacidad de endeudamiento?
+                                </label>
+                                <p class="text-xs text-gray-500">No reportado negativamente en centrales de riesgo.</p>
+                            </div>
+                            <input type="checkbox" id="calif-endeudamiento" class="w-5 h-5 text-purple-600 rounded focus:ring-purple-500 cursor-pointer">
+                        </div>
+
+                        <!-- Toggle Capacidad de Financiación -->
+                        <div class="flex items-center justify-between p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition">
+                            <div>
+                                <label for="calif-financiacion" class="font-bold text-sm text-gray-800 dark:text-gray-200 cursor-pointer">
+                                    <i class="fas fa-chart-line text-amber-500 mr-2"></i>¿Capacidad de financiación aprobada?
+                                </label>
+                                <p class="text-xs text-gray-500">Sus ingresos mensuales soportan la cuota del saldo restante.</p>
+                            </div>
+                            <input type="checkbox" id="calif-financiacion" class="w-5 h-5 text-amber-600 rounded focus:ring-amber-500 cursor-pointer">
+                        </div>
+
+                        <!-- Notas Comerciales -->
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">Notas Comerciales del Asesor</label>
+                            <textarea id="calif-notas" class="form-control text-sm" rows="2" placeholder="Observaciones sobre la negociación, dudas del cliente o siguientes pasos..."></textarea>
+                        </div>
+
+                        <div class="flex gap-3 pt-2">
+                            <button onclick="guardarCalificacionFinanciera()" id="btn-guardar-calif"
+                                class="btn-asesor flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg shadow transition flex items-center justify-center gap-2">
+                                <i class="fas fa-check-circle"></i> Guardar Evaluación y Completar
+                            </button>
+                            <button type="button" class="btn-secondary px-4 py-2.5" onclick="cerrarModal('modal-calificar')">
+                                Cancelar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </main>
     </div>
     <!-- Modal de confirmación para cerrar sesión -->
@@ -402,6 +507,7 @@
         let tablaProspectos;
         let tablaCitas;
         let citaActualId = null;
+        let citasCache = {};
 
         // Navegación entre secciones
         document.addEventListener('DOMContentLoaded', function () {
@@ -571,6 +677,7 @@
                 if (!response.ok) throw new Error('Error en la respuesta del servidor');
 
                 const citas = await response.json();
+                citasCache = {};
                 const cuerpoTabla = document.getElementById('cuerpo-tabla-citas');
                 cuerpoTabla.innerHTML = '';
 
@@ -589,6 +696,7 @@
                 }
 
                 citas.forEach(cita => {
+                    citasCache[cita.id] = cita;
                     const fila = document.createElement('tr');
                     fila.setAttribute('data-id', cita.id);
                     fila.className = 'hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors';
@@ -609,6 +717,7 @@
                   <td class="px-4 py-4 text-sm text-gray-900 dark:text-white max-w-xs truncate hidden xl:table-cell" title="${cita.comentario}">${cita.comentario}</td>
                   <td class="px-4 py-4 whitespace-nowrap">
                       <span class="estado-badge ${obtenerClaseEstadoCita(cita.estado)}">${cita.estado}</span>
+                      ${cita.evaluacionCompletada ? '<span class="ml-1 inline-block px-1.5 py-0.5 text-[10px] font-bold bg-emerald-100 text-emerald-800 rounded">Evaluada</span>' : ''}
                   </td>
                   <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white hidden lg:table-cell">${fechaAsignada}</td>
                   <td class="px-4 py-4 text-sm text-gray-900 dark:text-white max-w-xs truncate hidden xl:table-cell" title="${cita.notasAdmin || ''}">${cita.notasAdmin}</td>
@@ -693,7 +802,18 @@
                 case 'Aprobada':
                     botones = `
                   <button class="btn-gestion-cita btn-asignar-fecha" data-id="${citaId}" data-accion="asignar-fecha">Asignar Fecha</button>
+                  <button class="btn-gestion-cita" style="background-color: #059669; color: white;" data-id="${citaId}" data-accion="calificar" title="Registrar asistencia y perfil financiero">
+                      <i class="fas fa-file-invoice-dollar mr-1"></i>Calificar
+                  </button>
                   <button class="btn-gestion-cita btn-pendiente" data-id="${citaId}" data-accion="pendiente">A Pendiente</button>
+                  <button class="btn-gestion-cita btn-notas" data-id="${citaId}" data-accion="notas">Notas</button>
+              `;
+                    break;
+                case 'Completada':
+                    botones = `
+                  <button class="btn-gestion-cita" style="background-color: #059669; color: white;" data-id="${citaId}" data-accion="calificar" title="Editar calificación comercial">
+                      <i class="fas fa-edit mr-1"></i>Editar Calif.
+                  </button>
                   <button class="btn-gestion-cita btn-notas" data-id="${citaId}" data-accion="notas">Notas</button>
               `;
                     break;
@@ -716,6 +836,7 @@
             const estados = {
                 'Pendiente': 'estado-pendiente',
                 'Aprobada': 'estado-aprobada',
+                'Completada': 'estado-aprobada',
                 'Rechazada': 'estado-rechazada',
                 'Contactado': 'estado-contactado'
             };
@@ -734,6 +855,9 @@
                 case 'asignar-fecha':
                     mostrarModal('modal-fecha');
                     break;
+                case 'calificar':
+                    abrirModalCalificar(citaActualId);
+                    break;
                 case 'pendiente':
                     cambiarEstadoCita('Pendiente');
                     break;
@@ -741,6 +865,107 @@
                     cargarNotasActuales();
                     mostrarModal('modal-notas');
                     break;
+            }
+        }
+
+        // Abrir Modal de Calificación Financiera y Precargar Datos
+        function abrirModalCalificar(citaId) {
+            const cita = citasCache[citaId];
+            if (!cita) {
+                mostrarNotificacion('No se encontraron los datos de la cita', 'error');
+                return;
+            }
+
+            const vehiculoNombre = cita.vehiculo || 'No especificado';
+            const precioVehiculo = cita.precioVehiculo || 0;
+            const cuotaSugerida = cita.cuotaInicialSugerida || (precioVehiculo * 0.10);
+
+            document.getElementById('calif-vehiculo-nombre').textContent = vehiculoNombre;
+            document.getElementById('calif-vehiculo-precio').textContent = '$' + Number(precioVehiculo).toLocaleString('es-CO');
+            document.getElementById('calif-cuota-sugerida').textContent = '$' + Number(cuotaSugerida).toLocaleString('es-CO');
+
+            // Cargar valores existentes si ya fue evaluada
+            document.getElementById('calif-asistio').checked = cita.asistio !== undefined ? cita.asistio : true;
+            document.getElementById('calif-cuota-inicial').checked = cita.tieneCuotaInicial || false;
+            document.getElementById('calif-monto-cuota').value = cita.montoCuotaInicial > 0 ? cita.montoCuotaInicial : '';
+            document.getElementById('calif-endeudamiento').checked = cita.capacidadEndeudamiento || false;
+            document.getElementById('calif-financiacion').checked = cita.capacidadFinanciacion || false;
+            document.getElementById('calif-notas').value = cita.notasAdmin && cita.notasAdmin !== 'Sin notas' ? cita.notasAdmin : '';
+
+            mostrarModal('modal-calificar');
+        }
+
+        // Guardar Calificación Financiera
+        async function guardarCalificacionFinanciera() {
+            if (!citaActualId) return;
+
+            const btn = document.getElementById('btn-guardar-calif');
+            const textoOriginal = btn.innerHTML;
+            btn.innerHTML = '<div class="loading-small"></div> Guardando...';
+            btn.disabled = true;
+
+            const asistio = document.getElementById('calif-asistio').checked;
+            const tieneCuotaInicial = document.getElementById('calif-cuota-inicial').checked;
+            const montoCuotaInicial = parseFloat(document.getElementById('calif-monto-cuota').value) || 0;
+            const capacidadEndeudamiento = document.getElementById('calif-endeudamiento').checked;
+            const capacidadFinanciacion = document.getElementById('calif-financiacion').checked;
+            const notas = document.getElementById('calif-notas').value;
+
+            try {
+                const params = new URLSearchParams();
+                params.append('asistio', asistio);
+                params.append('tieneCuotaInicial', tieneCuotaInicial);
+                params.append('montoCuotaInicial', montoCuotaInicial);
+                params.append('capacidadEndeudamiento', capacidadEndeudamiento);
+                params.append('capacidadFinanciacion', capacidadFinanciacion);
+                if (notas) params.append('notas', notas);
+
+                const response = await fetch(`/asesor/citas/${citaActualId}/calificar-financiero`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: params.toString()
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    mostrarNotificacion('¡Evaluación comercial registrada con éxito!', 'success');
+                    cerrarModal('modal-calificar');
+
+                    // Actualizar cache local
+                    if (citasCache[citaActualId]) {
+                        citasCache[citaActualId].asistio = asistio;
+                        citasCache[citaActualId].tieneCuotaInicial = tieneCuotaInicial;
+                        citasCache[citaActualId].montoCuotaInicial = montoCuotaInicial;
+                        citasCache[citaActualId].capacidadEndeudamiento = capacidadEndeudamiento;
+                        citasCache[citaActualId].capacidadFinanciacion = capacidadFinanciacion;
+                        citasCache[citaActualId].evaluacionCompletada = true;
+                        citasCache[citaActualId].estado = data.estado || 'Completada';
+                        if (notas) citasCache[citaActualId].notasAdmin = notas;
+                    }
+
+                    // Actualizar la fila en la tabla visualmente
+                    const fila = document.querySelector(`tr[data-id="${citaActualId}"]`);
+                    if (fila) {
+                        const badgeEstado = fila.querySelector('.estado-badge');
+                        if (badgeEstado) {
+                            badgeEstado.className = `estado-badge ${obtenerClaseEstadoCita(data.estado || 'Completada')}`;
+                            badgeEstado.textContent = data.estado || 'Completada';
+                        }
+                        const contenedorBotones = fila.querySelector(`#botones-cita-${citaActualId}`);
+                        if (contenedorBotones) {
+                            contenedorBotones.innerHTML = generarBotonesCita(data.estado || 'Completada', citaActualId);
+                        }
+                    }
+                } else {
+                    mostrarNotificacion(data.message || 'Error al guardar la calificación', 'error');
+                }
+            } catch (error) {
+                console.error('Error al calificar cita:', error);
+                mostrarNotificacion('Error de conexión al servidor', 'error');
+            } finally {
+                btn.innerHTML = textoOriginal;
+                btn.disabled = false;
             }
         }
 
