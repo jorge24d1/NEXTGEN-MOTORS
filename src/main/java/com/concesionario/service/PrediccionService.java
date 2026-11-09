@@ -1,87 +1,86 @@
 package com.concesionario.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import weka.classifiers.Classifier;
-import weka.core.Instance;
-import weka.core.Instances;
-import weka.core.converters.ConverterUtils.DataSource;
+import org.springframework.web.client.RestClient;
 
-import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class PrediccionService {
 
-    private Classifier modelo;
-    private Instances estructura;
+    private static final Logger log = LoggerFactory.getLogger(PrediccionService.class);
 
-    public PrediccionService() {
+    private final RestClient restClient;
+    private final String apiUrl;
+
+    public PrediccionService(@Value("${prediccion.api.url:http://localhost:8000}") String apiUrl) {
+        this.apiUrl = apiUrl;
+        this.restClient = RestClient.builder()
+                .baseUrl(apiUrl)
+                .build();
+        log.info("✅ PrediccionService conectado a FastAPI en: {}", apiUrl);
+    }
+
+    /**
+     * Consulta el microservicio FastAPI (/predecir) enviando las variables en un Map simple.
+     */
+    @SuppressWarnings("unchecked")
+    public Map<String, Object> consultarApi(double citas, double antiguedad, String estado, String interes, double tiempo) {
         try {
-            System.out.println(" Cargando modelo y estructura...");
+            Map<String, Object> body = new HashMap<>();
+            body.put("cantidad_citas", citas);
+            body.put("antiguedad_cuenta", antiguedad);
+            body.put("estado_ultima_cita", estado);
+            body.put("interes_vehiculo", interes);
+            body.put("tiempo_entre_citas", tiempo);
 
-            // Cargar modelo
-            InputStream modeloStream = getClass().getClassLoader().getResourceAsStream("modelo_PA.model");
-            if (modeloStream == null) {
-                throw new RuntimeException(" No se encontró modelo_PA.model");
-            }
-            modelo = (Classifier) weka.core.SerializationHelper.read(modeloStream);
+            log.info("📡 [PrediccionService] Enviando datos a FastAPI ({}): {}", apiUrl, body);
 
-            // Cargar estructura desde el ARFF
-            InputStream estructuraStream = getClass().getClassLoader().getResourceAsStream("estructura.arff");
-            if (estructuraStream == null) {
-                throw new RuntimeException(" No se encontró estructura.arff");
-            }
+            Map<String, Object> respuesta = restClient.post()
+                    .uri("/predecir")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(body)
+                    .retrieve()
+                    .body(Map.class);
 
-            DataSource source = new DataSource(estructuraStream);
-            estructura = source.getDataSet();
-            estructura.setClassIndex(estructura.numAttributes() - 1);
-
-            System.out.println("✅ Modelo cargado: " + modelo.getClass().getSimpleName());
-            System.out.println("✅ Estructura cargada: " + estructura.numAttributes() + " atributos");
-            System.out.println("✅ Clase: " + estructura.classAttribute().name());
-
+            log.info(" [PrediccionService] Respuesta recibida de FastAPI: {}", respuesta);
+            return respuesta;
         } catch (Exception e) {
-            System.err.println(" Error cargando modelo: " + e.getMessage());
-            e.printStackTrace();
+            log.error("❌ Error al llamar FastAPI ({}/predecir): {}", apiUrl, e.getMessage(), e);
+            return null;
         }
     }
 
+    /**
+     * Predice si el cliente es potencial ("Si" o "No").
+     */
     public String predecir(double citas, double antiguedad, String estado, String interes, double tiempo) {
-        try {
-            Instance nuevaInstancia = new weka.core.DenseInstance(estructura.numAttributes());
-            nuevaInstancia.setDataset(estructura);
-
-            nuevaInstancia.setValue(0, citas);
-            nuevaInstancia.setValue(1, antiguedad);
-            nuevaInstancia.setValue(2, estado);
-            nuevaInstancia.setValue(3, interes);
-            nuevaInstancia.setValue(4, tiempo);
-
-            double prediccion = modelo.classifyInstance(nuevaInstancia);
-            return estructura.classAttribute().value((int) prediccion);
-
-        } catch (Exception e) {
-            System.err.println("❌ Error en predicción: " + e.getMessage());
-            return "Error";
+        Map<String, Object> resp = consultarApi(citas, antiguedad, estado, interes, tiempo);
+        if (resp != null && resp.get("prediccion") != null) {
+            return String.valueOf(resp.get("prediccion"));
         }
+        return "No";
     }
 
-
+    /**
+     * Obtiene la probabilidad calculada en porcentaje (0.0 - 100.0).
+     */
     public double obtenerProbabilidadSi(double citas, double antiguedad, String estado, String interes, double tiempo) {
-        try {
-            Instance nuevaInstancia = new weka.core.DenseInstance(estructura.numAttributes());
-            nuevaInstancia.setDataset(estructura);
-
-            nuevaInstancia.setValue(0, citas);
-            nuevaInstancia.setValue(1, antiguedad);
-            nuevaInstancia.setValue(2, estado);
-            nuevaInstancia.setValue(3, interes);
-            nuevaInstancia.setValue(4, tiempo);
-
-            double[] distribucion = modelo.distributionForInstance(nuevaInstancia);
-            return distribucion[0] * 100;
-
-        } catch (Exception e) {
-            return 50.0;
+        Map<String, Object> resp = consultarApi(citas, antiguedad, estado, interes, tiempo);
+        if (resp != null && resp.get("probabilidad") != null) {
+            Object valor = resp.get("probabilidad");
+            if (valor instanceof Number num) {
+                return num.doubleValue();
+            }
+            try {
+                return Double.parseDouble(String.valueOf(valor));
+            } catch (Exception ignored) {}
         }
+        return 0.0;
     }
 }

@@ -48,7 +48,7 @@ public class PrediccionController {
         if (usuario != null) {
             calcularDatosDesdeCitas(usuario);
 
-            String resultado = prediccionService.predecir(
+            Map<String, Object> pred = prediccionService.consultarApi(
                     usuario.getCantidadCitas().doubleValue(),
                     usuario.getAntiguedadCuenta().doubleValue(),
                     usuario.getEstadoUltimaCita(),
@@ -56,13 +56,11 @@ public class PrediccionController {
                     usuario.getTiempoEntreCitas().doubleValue()
             );
 
-            double probabilidad = prediccionService.obtenerProbabilidadSi(
-                    usuario.getCantidadCitas().doubleValue(),
-                    usuario.getAntiguedadCuenta().doubleValue(),
-                    usuario.getEstadoUltimaCita(),
-                    usuario.getInteresVehiculo(),
-                    usuario.getTiempoEntreCitas().doubleValue()
-            );
+            String resultado = (pred != null && pred.get("prediccion") != null) ? String.valueOf(pred.get("prediccion")) : "No";
+            double probabilidad = 0.0;
+            if (pred != null && pred.get("probabilidad") instanceof Number num) {
+                probabilidad = num.doubleValue();
+            }
 
             usuario.setClientePotencial(resultado);
             usuario.setProbabilidad(probabilidad);
@@ -99,7 +97,7 @@ public class PrediccionController {
         if (usuario != null) {
             calcularDatosDesdeCitas(usuario);
 
-            String resultado = prediccionService.predecir(
+            Map<String, Object> pred = prediccionService.consultarApi(
                     usuario.getCantidadCitas().doubleValue(),
                     usuario.getAntiguedadCuenta().doubleValue(),
                     usuario.getEstadoUltimaCita(),
@@ -107,13 +105,11 @@ public class PrediccionController {
                     usuario.getTiempoEntreCitas().doubleValue()
             );
 
-            double probabilidad = prediccionService.obtenerProbabilidadSi(
-                    usuario.getCantidadCitas().doubleValue(),
-                    usuario.getAntiguedadCuenta().doubleValue(),
-                    usuario.getEstadoUltimaCita(),
-                    usuario.getInteresVehiculo(),
-                    usuario.getTiempoEntreCitas().doubleValue()
-            );
+            String resultado = (pred != null && pred.get("prediccion") != null) ? String.valueOf(pred.get("prediccion")) : "No";
+            double probabilidad = 0.0;
+            if (pred != null && pred.get("probabilidad") instanceof Number num) {
+                probabilidad = num.doubleValue();
+            }
 
             usuario.setClientePotencial(resultado);
             usuario.setProbabilidad(probabilidad);
