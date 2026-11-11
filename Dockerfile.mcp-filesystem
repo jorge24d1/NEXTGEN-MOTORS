@@ -20,4 +20,4 @@ EXPOSE 3001
 # expone el protocolo MCP como SSE en el puerto 3001
 CMD ["supergateway", \
      "--port", "3001", \
-     "--stdio", "npx -y @modelcontextprotocol/server-filesystem /projects"]
+     "--stdio", "mcp-server-filesystem /projects"]
