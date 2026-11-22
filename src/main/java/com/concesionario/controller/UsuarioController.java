@@ -2,6 +2,8 @@ package com.concesionario.controller;
 
 import com.concesionario.utils.SecurityUtils;
 
+import jakarta.servlet.http.HttpSession;
+import org.springframework.util.StringUtils;
 import java.security.Principal;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -28,6 +30,8 @@ import com.concesionario.repository.UsuarioRepository;
 @Controller
 @RequestMapping("/usuario")
 public class UsuarioController {
+
+    private static final String CITA_PENDIENTE = "citaPendiente";
 
     @Autowired
     private AdministradorService administradorService;
@@ -80,7 +84,7 @@ public class UsuarioController {
         Usuario usuario = usuarioService.findByCorreoUser(email);
 
         // Validar si el perfil está completo
-        if (usuario.getIdentificacionUser() == null || usuario.getIdentificacionUser().isEmpty()) {
+        if (usuario.perfilIncompleto()) {
             return "redirect:/usuario/completar-perfil";
         }
 
@@ -94,27 +98,47 @@ public class UsuarioController {
     public String mostrarCompletarPerfil(Principal principal, Model model) {
         String email = getEmailFromPrincipal(principal);
         Usuario usuario = usuarioService.findByCorreoUser(email);
+        if (!usuario.perfilIncompleto()) {
+            return "redirect:/usuario/perfil";
+        }
         model.addAttribute("usuario", usuario);
         return "usuario/completar-perfil";
     }
 
     @PostMapping("/completar-perfil")
-    public String guardarPerfilCompleto(@RequestParam String identificacion,
-            @RequestParam String password,
-            Principal principal,
-            RedirectAttributes redirectAttributes) {
+    public String guardarPerfilCompleto(@RequestParam(required = false) String apellido,
+            @RequestParam(required = false) String identificacion,
+            @RequestParam(required = false) String password,
+            Principal principal, HttpSession session, RedirectAttributes redirectAttributes) {
         try {
-            String email = getEmailFromPrincipal(principal);
-            Usuario usuario = usuarioService.findByCorreoUser(email);
-            usuario.setIdentificacionUser(identificacion);
-            // Encriptar la contraseña antes de guardar
-            usuario.setPasswordUser(passwordEncoder.encode(password));
-            usuarioRepository.save(usuario);
-            redirectAttributes.addFlashAttribute("success",
-                    "Perfil completado exitosamente. Ahora puedes usar tu contraseña para entrar.");
+            Usuario usuario = usuarioService.findByCorreoUser(getEmailFromPrincipal(principal));
+            if (usuario.perfilIncompleto()) {
+                if ((usuario.faltaApellido() && !StringUtils.hasText(apellido))
+                        || (usuario.faltaIdentificacion() && !StringUtils.hasText(identificacion))
+                        || (usuario.faltaPassword() && !StringUtils.hasText(password))) {
+                    redirectAttributes.addFlashAttribute("error", "Completa los campos pendientes para continuar.");
+                    return "redirect:/usuario/completar-perfil";
+                }
+                if (usuario.faltaApellido()) {
+                    usuario.setApellidoUser(apellido.strip());
+                }
+                if (usuario.faltaIdentificacion()) {
+                    usuario.setIdentificacionUser(identificacion.strip());
+                }
+                if (usuario.faltaPassword()) {
+                    usuario.setPasswordUser(passwordEncoder.encode(password));
+                }
+                usuarioRepository.save(usuario);
+            }
+            Cita pendiente = (Cita) session.getAttribute(CITA_PENDIENTE);
+            if (pendiente != null) {
+                session.removeAttribute(CITA_PENDIENTE);
+                redirectAttributes.addFlashAttribute(CITA_PENDIENTE, pendiente);
+                return "redirect:/usuario/cita";
+            }
             return "redirect:/usuario/perfil";
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Error al completar el perfil: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("error", "No se pudo guardar tu perfil. Inténtalo de nuevo.");
             return "redirect:/usuario/completar-perfil";
         }
     }
@@ -155,38 +179,32 @@ public class UsuarioController {
             @RequestParam(required = false) String tipo,
             @RequestParam(required = false) String color,
             Principal principal,
-            Model model) {
+            Model model, HttpSession session) {
 
         // Obtener usuario autenticado
         String email = getEmailFromPrincipal(principal);
         Usuario usuario = usuarioRepository.findByCorreoUser(email)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-        // Crear nueva cita con datos del usuario
-        Cita cita = new Cita();
-        cita.setNombres(usuario.getNombreUser());
-        cita.setApellidos(usuario.getApellidoUser());
-        cita.setCedula(usuario.getIdentificacionUser());
-        cita.setCorreoElectronico(usuario.getCorreoUser());
-        // cita.setTelefono(usuario.getTelefonoUser()); // Si tienes teléfono en usuario
-
+        Cita cita = (Cita) model.getAttribute(CITA_PENDIENTE);
+        if (cita == null) {
+            cita = new Cita();
+            cita.setVehiculoId(vehiculoId);
+            cita.setColorVehiculo(color);
+            cita.setTipo(tipo != null ? tipo : (vehiculoId == null ? "Otros" : "Interés en Vehículo"));
+        }
+        if (usuario.perfilIncompleto()) {
+            return completarPerfilParaCita(cita, session);
+        }
+        copiarDatosPersonales(cita, usuario);
         List<Vehiculo> vehiculos = vehiculoService.obtenerTodos();
-
-        // Configuración basada en parámetros
-        if (vehiculoId != null) {
-            Vehiculo vehiculo = vehiculoService.obtenerPorId(vehiculoId);
+        if (StringUtils.hasText(cita.getVehiculoId())) {
+            Vehiculo vehiculo = vehiculoService.obtenerPorId(cita.getVehiculoId());
             if (vehiculo != null) {
-                // cita.setTipo("Interés en Vehículo"); //esto hay que quitarlo:
-                cita.setVehiculoId(vehiculo.getId());
                 cita.setNombreVehiculo(vehiculo.getMarca() + " " + vehiculo.getModelo());
-                cita.setColorVehiculo(color);
                 model.addAttribute("coloresVehiculo",
                         vehiculo.getColores() != null ? vehiculo.getColores() : Collections.emptyList());
             }
-        } else if (tipo != null) {
-            cita.setTipo(tipo);
-        } else {
-            cita.setTipo("Otros");
         }
         List<Trabajador> trabajadores = trabajadorRepository.findByRolesContaining(Rol.TRB_ASESOR);
 
@@ -198,9 +216,16 @@ public class UsuarioController {
 
     @PostMapping("/cita/guardar")
     public String guardarCita(@ModelAttribute Cita cita,
-            Principal principal,
+            Principal principal, HttpSession session,
             RedirectAttributes redirectAttributes) {
         try {
+            Usuario usuario = usuarioRepository.findByCorreoUser(getEmailFromPrincipal(principal))
+                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+            if (usuario.perfilIncompleto()) {
+                return completarPerfilParaCita(cita, session);
+            }
+            copiarDatosPersonales(cita, usuario);
+
             // 1. Validar que el trabajador exista y guardar su nombre y sede
             Trabajador trabajador = trabajadorRepository.findById(cita.getTrabajadorId())
                     .orElseThrow(() -> new RuntimeException("Trabajador no encontrado"));
@@ -208,22 +233,8 @@ public class UsuarioController {
             cita.setTrabajadorNombre(trabajador.getNombre() + " " + trabajador.getApellido());
             cita.setSede(trabajador.getSede());
 
-            // Como el cliente ya no envía fecha ni hora, eliminamos la validación de
-            // disponibilidad
-            // El estado por defecto es Pendiente y fechaCita/horaCita son nulos.
-
-            // Resto de la lógica de guardado...
-            String email = getEmailFromPrincipal(principal);
-            Usuario usuario = usuarioRepository.findByCorreoUser(email)
-                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-
-            if (!validarDatosInmutables(cita, usuario)) {
-                redirectAttributes.addFlashAttribute("error", "No puedes modificar tus datos personales");
-                return "redirect:/usuario/cita";
-            }
-
             Vehiculo vehiculo = null;
-            if (cita.getVehiculoId() != null) {
+            if (StringUtils.hasText(cita.getVehiculoId())) {
                 vehiculo = vehiculoService.obtenerPorId(cita.getVehiculoId());
                 if (vehiculo == null) {
                     redirectAttributes.addFlashAttribute("error", "Vehículo no encontrado");
@@ -280,11 +291,23 @@ public class UsuarioController {
         }
     }
 
-    private boolean validarDatosInmutables(Cita cita, Usuario usuario) {
-        return usuario.getNombreUser().equals(cita.getNombres()) &&
-                usuario.getApellidoUser().equals(cita.getApellidos()) &&
-                usuario.getIdentificacionUser().equals(cita.getCedula()) &&
-                usuario.getCorreoUser().equals(cita.getCorreoElectronico());
+    private String completarPerfilParaCita(Cita cita, HttpSession session) {
+        Cita borrador = new Cita();
+        borrador.setVehiculoId(cita.getVehiculoId());
+        borrador.setColorVehiculo(cita.getColorVehiculo());
+        borrador.setTipo(cita.getTipo());
+        borrador.setTelefono(cita.getTelefono());
+        borrador.setTrabajadorId(cita.getTrabajadorId());
+        borrador.setComentario(cita.getComentario());
+        session.setAttribute(CITA_PENDIENTE, borrador);
+        return "redirect:/usuario/completar-perfil";
+    }
+
+    private void copiarDatosPersonales(Cita cita, Usuario usuario) {
+        cita.setNombres(usuario.getNombreUser());
+        cita.setApellidos(usuario.getApellidoUser());
+        cita.setCedula(usuario.getIdentificacionUser());
+        cita.setCorreoElectronico(usuario.getCorreoUser());
     }
 
     @GetMapping("/mis-citas")

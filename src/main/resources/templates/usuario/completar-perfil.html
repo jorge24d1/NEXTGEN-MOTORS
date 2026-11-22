@@ -126,34 +126,40 @@
         <div class="form-card glowing">
             <div class="form-header">
                 <h2 class="text-2xl font-bold">¡HOLA, <span th:text="${#strings.toUpperCase(usuario.nombreUser)}">USUARIO</span>!</h2>
-                <p class="mt-2 opacity-90">Ya casi terminamos tu registro</p>
+                <p class="mt-2 opacity-90">Completa tu perfil</p>
             </div>
             <div class="form-body">
                 <p class="text-sm text-gray-600 dark:text-gray-400 mb-6 text-center">
-                    Por seguridad, necesitamos que completes tu identificación y crees una contraseña local para tu cuenta.
+                    <span th:if="${session.citaPendiente != null}">Completa los datos pendientes para continuar con tu cita.</span>
+                    <span th:unless="${session.citaPendiente != null}">Agrega los datos que faltan en tu cuenta.</span>
                 </p>
 
+                <p th:if="${error}" th:text="${error}" role="alert"></p>
                 <form th:action="@{/usuario/completar-perfil}" method="post">
-                    <div class="input-with-icon">
+                    <div class="input-with-icon" th:if="${usuario.faltaApellido()}">
+                        <input type="text" name="apellido" class="form-input" placeholder="Apellido" aria-label="Apellido" autocomplete="family-name" required>
+                        <div class="input-icon"><i class="fas fa-user"></i></div>
+                    </div>
+                    <div class="input-with-icon" th:if="${usuario.faltaIdentificacion()}">
                         <input type="text" name="identificacion" class="form-input" placeholder="Número de Identificación (CC)" required>
                         <div class="input-icon">
                             <i class="fas fa-id-card"></i>
                         </div>
                     </div>
 
-                    <div class="input-with-icon">
+                    <div class="input-with-icon" th:if="${usuario.faltaPassword()}">
                         <input type="password" name="password" class="form-input" placeholder="Nueva Contraseña" required>
                         <div class="input-icon">
                             <i class="fas fa-lock"></i>
                         </div>
                     </div>
 
-                    <p class="text-xs text-gray-500 mb-6">
+                    <p th:if="${usuario.faltaPassword()}" class="text-xs text-gray-500 mb-6">
                         <i class="fas fa-info-circle mr-1"></i> Esta contraseña te permitirá entrar incluso si no tienes acceso a Google más adelante.
                     </p>
 
                     <button type="submit" class="btn-primary">
-                        FINALIZAR REGISTRO <i class="fas fa-chevron-right ml-2"></i>
+                        GUARDAR Y CONTINUAR <i class="fas fa-chevron-right ml-2"></i>
                     </button>
                 </form>
             </div>

@@ -180,7 +180,7 @@
 
                                 <div class="form-group" id="colorContainer" style="display: block;">
                                     <label for="colorVehiculo">Color del vehículo:</label>
-                                    <select id="colorVehiculo" th:field="*{colorVehiculo}">
+                                    <select id="colorVehiculo" th:data-seleccionado="${cita.colorVehiculo}" th:field="*{colorVehiculo}">
                                         <option value="">-- Selecciona un color --</option>
                                         <option
                                             th:each="color : ${coloresVehiculo ?: #strings.listSplit('Rojo,Azul,Blanco,Negro,Gris', ',')}"
@@ -395,10 +395,7 @@
                     document.getElementById('horarioContainer').style.display = 'none';
                     document.getElementById('sede').value = "";
                 }
-            });
-
-            // Validar antes de enviar el formulario
-
+            }).trigger('change');
 
             // Validar antes de enviar el formulario
             document.querySelector('.appointment-form').addEventListener('submit', function (e) {
@@ -521,32 +518,11 @@
                 width: '100%'
             });
 
-            // Verificar si viene de explorar vehículo
-            const urlParams = new URLSearchParams(window.location.search);
-            const vehiculoId = urlParams.get('vehiculoId');
-            const color = urlParams.get('color');
-
-            if (vehiculoId) {
-                // Seleccionar automáticamente la categoría "Interés en Vehículo"
-                const categoriaInteres = document.querySelector('.categoria-item:first-child');
-                seleccionarCategoria('Interés en Vehículo', categoriaInteres);
-
-                // Esperar a que Select2 se inicialice
-                setTimeout(() => {
-                    // Seleccionar el vehículo en el dropdown
-                    $('#vehiculo').val(vehiculoId).trigger('change');
-
-                    // Si hay color, seleccionarlo
-                    if (color) {
-                        setTimeout(() => {
-                            $('#colorVehiculo').val(color).trigger('change');
-                        }, 300);
-                    }
-                }, 300);
-            }
-
-            // Inicializar el campo de colores
             actualizarNombreVehiculo();
+            const color = document.getElementById('colorVehiculo').dataset.seleccionado;
+            if (color) {
+                $('#colorVehiculo').val(color.split('#')[0]).trigger('change');
+            }
         });
     </script>
 </body>

@@ -49,6 +49,22 @@ public class Usuario {
     public Usuario() {
     }
 
+    public boolean faltaApellido() {
+        return apellidoUser == null || apellidoUser.isBlank();
+    }
+
+    public boolean faltaIdentificacion() {
+        return identificacionUser == null || identificacionUser.isBlank();
+    }
+
+    public boolean faltaPassword() {
+        return passwordUser == null || passwordUser.isBlank();
+    }
+
+    public boolean perfilIncompleto() {
+        return faltaApellido() || faltaIdentificacion();
+    }
+
     // Getters y Setters
     public String getId() {
         return id;

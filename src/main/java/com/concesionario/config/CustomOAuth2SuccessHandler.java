@@ -18,6 +18,9 @@ import org.springframework.stereotype.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
+import org.springframework.security.web.savedrequest.SavedRequest;
+import java.net.URI;
 import java.io.IOException;
 import java.util.Optional;
 
@@ -66,7 +69,19 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
         Optional<Usuario> usuarioOpt = usuarioRepository.findByCorreoUser(email);
         if (usuarioOpt.isPresent()) {
             Usuario usuario = usuarioOpt.get();
-            if (usuario.getIdentificacionUser() == null || usuario.getIdentificacionUser().isEmpty()) {
+            HttpSessionRequestCache cache = new HttpSessionRequestCache();
+            SavedRequest saved = cache.getRequest(request, response);
+            if (saved != null && "GET".equals(saved.getMethod())) {
+                URI destino = URI.create(saved.getRedirectUrl());
+                String rutaCita = request.getContextPath() + "/usuario/cita";
+                if (rutaCita.equals(destino.getRawPath())) {
+                    cache.removeRequest(request, response);
+                    String query = destino.getRawQuery();
+                    response.sendRedirect(rutaCita + (query == null ? "" : "?" + query));
+                    return;
+                }
+            }
+            if (usuario.perfilIncompleto()) {
                 logger.info("Perfil incompleto para {}, redirigiendo a completar-perfil", email);
                 response.sendRedirect("/usuario/completar-perfil");
             } else {
