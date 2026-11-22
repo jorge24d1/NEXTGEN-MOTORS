@@ -1539,6 +1539,23 @@
                                     </div>
                                 </div>
 
+                                <div class="mt-4 rounded-lg border border-blue-200 bg-blue-50 p-4 text-sm text-blue-900 dark:border-blue-800 dark:bg-blue-900/20 dark:text-blue-200">
+                                    <p>
+                                        <i class="fas fa-info-circle mr-2"></i>
+                                        <strong>Información del modelo:</strong>
+                                        esta predicción se genera mediante un árbol de decisión de
+                                        Scikit-learn con criterio de entropía, inspirado en el algoritmo J48,
+                                        aunque no es una implementación idéntica. El modelo fue entrenado con
+                                        datos históricos y analiza la cantidad de citas, la antigüedad de la
+                                        cuenta, el interés por el vehículo y el estado de la cita. Cuando la
+                                        cita está <strong>Completada</strong>, también utiliza la asistencia,
+                                        la cuota inicial y la capacidad de financiación y endeudamiento.
+                                        La probabilidad mostrada es una estimación de que el cliente sea
+                                        potencial y el resultado debe utilizarse como apoyo, no como una
+                                        decisión automática definitiva.
+                                    </p>
+                                </div>
+
                                 <button onclick="realizarPrediccion()" class="btn-primary mt-4">
                                     <i class='bx bx-calculator mr-2'></i>Realizar Predicción
                                 </button>
