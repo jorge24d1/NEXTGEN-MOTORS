@@ -83,8 +83,6 @@ public class SecurityConfig {
                                 "/uploads/**",
                                 "/auth/**",
                                 "/test/status/**",
-                                "/api/usuario/**",
-                                "/api/prediccion/**",
                                 "/api/n8n/**"
                         ).permitAll()
                         .requestMatchers("/asesor/vehiculos/*/compartir").hasRole("TRB_ASESOR")
