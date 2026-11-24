@@ -39,6 +39,12 @@ services:
         sync: false
       - key: BREVO_SENDER_EMAIL
         sync: false
+      - key: BREVO_MARKETING_API_KEY
+        sync: false
+      - key: BREVO_OFERTAS_LISTA_ID
+        sync: false
+      - key: OFERTAS_CORREO_PRUEBA
+        sync: false
 
       # ---- IA ----
       - key: GROQ_API_KEY

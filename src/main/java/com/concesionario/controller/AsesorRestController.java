@@ -35,9 +35,6 @@ public class AsesorRestController {
     private VehiculoService vehiculoService;
 
     @Autowired
-    private EmailService emailService;
-
-    @Autowired
     private NotificationService notificacionService;
 
     @Autowired
@@ -460,32 +457,6 @@ public class AsesorRestController {
                     .collect(Collectors.toList());
         } catch (Exception e) {
             throw new RuntimeException("Error al obtener categorías: " + e.getMessage());
-        }
-    }
-
-    @PostMapping("/vehiculos/{id}/compartir")
-    public ResponseEntity<?> compartirVehiculoConClientes(@PathVariable String id, Principal principal) {
-        try {
-            // Verificar que el asesor está autenticado
-            Trabajador asesor = trabajadorDetailsService.findByCorreo(principal.getName());
-
-            System.out.println("🔄 Iniciando envío masivo por asesor: " + asesor.getNombre());
-
-            // Enviar promoción masiva
-            emailService.enviarPromocionVehiculo(id);
-
-            // Registrar la acción
-            System.out.println("✅ Promoción masiva completada por asesor: " + asesor.getNombre());
-
-            return ResponseEntity.ok(Map.of(
-                    "success", true,
-                    "message", "Promoción enviada exitosamente a todos los clientes"));
-
-        } catch (Exception e) {
-            System.err.println("❌ Error en envío masivo: " + e.getMessage());
-            return ResponseEntity.badRequest().body(Map.of(
-                    "success", false,
-                    "message", "Error al enviar la promoción: " + e.getMessage()));
         }
     }
 }

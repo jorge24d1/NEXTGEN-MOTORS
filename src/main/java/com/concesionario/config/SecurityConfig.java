@@ -19,6 +19,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 
 import java.util.Collection;
@@ -50,7 +52,9 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable())
+                .csrf(csrf -> csrf.requireCsrfProtectionMatcher(new OrRequestMatcher(
+                        new AntPathRequestMatcher("/asesor/vehiculos/*/compartir", "POST"),
+                        new AntPathRequestMatcher("/usuario/perfil/ofertas", "POST"))))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/",
@@ -83,6 +87,8 @@ public class SecurityConfig {
                                 "/api/prediccion/**",
                                 "/api/n8n/**"
                         ).permitAll()
+                        .requestMatchers("/asesor/vehiculos/*/compartir").hasRole("TRB_ASESOR")
+                        .requestMatchers("/usuario/perfil/ofertas").hasRole("USUARIO")
                         .requestMatchers("/perfil_gestor").hasRole("TRB_GESTOR")
                         .requestMatchers("/perfil_analisis").hasRole("TRB_ANALISIS")
                         .requestMatchers("/perfil_asesor").hasRole("TRB_ASESOR")
@@ -107,7 +113,7 @@ public class SecurityConfig {
                         .successHandler(customOAuth2SuccessHandler)
                 )
                 .logout(logout -> logout
-                        .logoutUrl("/logout")
+                        .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
                         .logoutSuccessUrl("/usuario/Inicio")
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")

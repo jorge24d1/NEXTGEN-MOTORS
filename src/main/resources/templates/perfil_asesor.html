@@ -4,6 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-ofertas" th:content="${_csrf.token}">
+    <script th:src="@{/js/ofertas.js}" defer></script>
     <title>Panel Asesor - NextGenMotors</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com" rel="preconnect">
@@ -1455,11 +1457,13 @@
             <p class="text-gray-600 dark:text-gray-300 mb-2"><strong>Motor:</strong> ${vehiculo.motor || 'No especificado'}</p>
             <p class="text-gray-600 dark:text-gray-300"><strong>Transmisión:</strong> ${vehiculo.transmision || 'No especificado'}</p>
         </div>
-        <button class="btn-asesor w-full" onclick="compartirVehiculo('${vehiculo.id}')">
-            <i class="fas fa-share mr-2"></i>Compartir con Cliente
+        <button class="btn-asesor w-full" type="button" data-compartir-oferta>
+            <i class="fas fa-share mr-2"></i>Enviar oferta por correo
         </button>
     `;
 
+            const botonOferta = card.querySelector('[data-compartir-oferta]');
+            botonOferta.addEventListener('click', () => compartirOferta(botonOferta, vehiculo.id));
             return card;
         }
 
@@ -1511,45 +1515,6 @@
             document.getElementById('filtro-marca').value = 'TODAS';
             document.getElementById('busqueda-modelo').value = '';
             mostrarVehiculos(vehiculosData);
-        }
-
-        // Función para compartir vehículo (placeholder)
-        // Función para compartir vehículo con todos los clientes
-        async function compartirVehiculo(vehiculoId) {
-            if (!confirm('¿Estás seguro de que quieres enviar este vehículo por correo a TODOS los clientes?')) {
-                return;
-            }
-
-            // Guardar referencia al botón ANTES de async
-            const boton = event.target;
-            const textoOriginal = boton.innerHTML;
-
-            try {
-                // Mostrar loading
-                boton.innerHTML = '<div class="loading mx-auto"></div> Enviando...';
-                boton.disabled = true;
-
-                const response = await fetch(`/asesor/vehiculos/${vehiculoId}/compartir`, {
-                    method: 'POST'
-                    // Quita headers si no son necesarios
-                });
-
-                const resultado = await response.json();
-
-                if (resultado.success) {
-                    mostrarNotificacion('✅ ' + resultado.message, 'success');
-                } else {
-                    mostrarNotificacion('❌ ' + resultado.message, 'error');
-                }
-
-            } catch (error) {
-                console.error('Error al compartir vehículo:', error);
-                mostrarNotificacion('❌ Error al enviar la promoción', 'error');
-            } finally {
-                // Restaurar botón SIEMPRE
-                boton.innerHTML = '<i class="fas fa-share mr-2"></i>Compartir con Cliente';
-                boton.disabled = false;
-            }
         }
 
         // Modificar la navegación para cargar vehículos

@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-ofertas" th:content="${_csrf.token}">
+    <script th:src="@{/js/ofertas.js}" defer></script>
     <title>Mi Perfil - NextGenMotors</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com" rel="preconnect">
@@ -786,6 +788,12 @@
         <section id="bienvenida" class="slide-in">
             <h1>Bienvenido, <span th:text="${nombreUsuario}">Usuario</span></h1>
             <p>Gracias por confiar en nuestro concesionario. Nos especializamos en ofrecerte la mejor experiencia en compra, mantenimiento y soporte de vehículos. Explora nuestros servicios desde este panel.</p>
+            <details class="info-card" id="preferencia-ofertas">
+                <summary>Mis ofertas de vehículos por correo</summary>
+                <p role="status" data-estado></p>
+                <label><input type="checkbox" data-aceptar disabled> Quiero recibir ofertas de vehículos por correo.</label>
+                <button type="button" class="btn-nueva-cita" data-guardar disabled>Guardar preferencia</button>
+            </details>
         </section>
 
         <!-- Sección Citas -->
