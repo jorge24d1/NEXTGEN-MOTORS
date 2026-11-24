@@ -13,18 +13,14 @@ services:
     runtime: docker
     dockerfilePath: ./Dockerfile
     region: oregon
-    plan: starter          # $7/mes — sin sleep. Usar 'free' para pruebas.
+    plan: free
     healthCheckPath: /
     envVars:
       # ---- Bases de datos ----
       - key: SPRING_DATA_MONGODB_URI
         sync: false        # Se define manualmente en el dashboard de Render
       - key: APP_BASE_URL
-        fromService:
-          name: nextgen-motors
-          type: web
-          property: host
-          envVarPrefix: https://
+        sync: false        # URL pública HTTPS de Spring Boot, sin barra final
 
       # ---- Cloudinary ----
       - key: CLOUDINARY_CLOUD_NAME
@@ -38,6 +34,10 @@ services:
       - key: MAIL_USERNAME
         sync: false
       - key: MAIL_PASSWORD
+        sync: false
+      - key: BREVO_API_KEY
+        sync: false
+      - key: BREVO_SENDER_EMAIL
         sync: false
 
       # ---- IA ----

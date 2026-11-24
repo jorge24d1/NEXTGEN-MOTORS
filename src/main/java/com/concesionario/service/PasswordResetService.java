@@ -8,8 +8,6 @@ import com.concesionario.repository.TrabajadorRepository;
 import com.concesionario.repository.AdministradorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -31,16 +29,13 @@ public class PasswordResetService {
     private AdministradorRepository administradorRepository;
 
     @Autowired
-    private JavaMailSender mailSender;
+    private CorreoRecuperacion correoRecuperacion;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Value("${app.base-url:}") // El valor puede estar vacío
     private String configuredBaseUrl;
-
-    @Value("${spring.mail.username}")
-    private String fromEmail;
 
     private static final long EXPIRE_TOKEN_AFTER_MINUTES = 30;
 
@@ -50,7 +45,7 @@ public class PasswordResetService {
     private String getBaseUrl() {
         // 1. Si baseUrl está configurado explícitamente, úsalo
         if (StringUtils.hasText(configuredBaseUrl)) {
-            return configuredBaseUrl;
+            return configuredBaseUrl.endsWith("/") ? configuredBaseUrl.substring(0, configuredBaseUrl.length() - 1) : configuredBaseUrl;
         }
 
         // 2. Detectar si estamos en Azure App Service
@@ -65,10 +60,6 @@ public class PasswordResetService {
     }
 
     public void initiatePasswordReset(String email) {
-        // Log para debugging
-        String currentBaseUrl = getBaseUrl();
-        System.out.println("🔗 PasswordReset - Usando BASE URL: " + currentBaseUrl);
-
         // Buscar primero en usuarios
         Optional<Usuario> usuarioOpt = usuarioRepository.findByCorreoUser(email);
         if (usuarioOpt.isPresent()) {
@@ -105,10 +96,12 @@ public class PasswordResetService {
             return;
         }
 
-        throw new RuntimeException("No se encontró ninguna cuenta con ese correo electrónico");
     }
 
     public void resetPassword(String token, String newPassword) {
+        if (!StringUtils.hasText(token)) {
+            throw new IllegalArgumentException("Token inválido");
+        }
         // Buscar en usuarios
         Optional<Usuario> usuarioOpt = usuarioRepository.findByResetPasswordToken(token);
         if (usuarioOpt.isPresent()) {
@@ -217,11 +210,7 @@ public class PasswordResetService {
                 break;
         }
 
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom(fromEmail);
-        message.setTo(email);
-        message.setSubject("Restablecimiento de contraseña - NextGenMotors");
-        message.setText(
+        correoRecuperacion.enviar(email, "Restablecimiento de contraseña - NextGenMotors",
                 "Hola,\n\n" +
                         "Has solicitado restablecer tu contraseña de " + tipoCuenta + " en NextGenMotors.\n\n" +
                         "Para crear una nueva contraseña, haz clic en el siguiente enlace:\n" +
@@ -230,8 +219,6 @@ public class PasswordResetService {
                         "\n\nSi no solicitaste este restablecimiento, por favor ignora este mensaje." +
                         "\n\nSaludos cordiales,\nEquipo NextGenMotors"
         );
-
-        mailSender.send(message);
     }
 
     // Método adicional para verificar si un email existe en cualquier tipo de cuenta
