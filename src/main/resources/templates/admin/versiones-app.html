@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Versiones de la app | NextGen Motors</title><link rel="stylesheet" href="/css/app-movil.css"></head>
+<body><header><a class="marca" href="/admin/dashboard">NextGen<span>Motors</span></a><a href="/admin/dashboard">Volver al panel</a></header>
+<main class="gestion"><h1>Versiones de la app</h1>
+<p role="status" th:if="${aviso}" th:text="${aviso}"></p>
+<form class="borrador" method="post" th:action="@{/admin/versiones-app}">
+  <h2>Nuevo borrador</h2>
+  <label>Versión visible <input name="version" placeholder="1.0.0" required maxlength="17"></label>
+  <label>Código de compilación <input type="number" name="codigo" min="1" max="2147483647" required></label>
+  <label>Novedades <textarea name="novedades" rows="3" maxlength="1000" required></textarea></label>
+  <button class="boton">Guardar borrador</button>
+</form>
+<h2>Historial</h2><p th:if="${#lists.isEmpty(versiones)}">Todavía no hay versiones.</p>
+<article th:each="v : ${versiones}"><h3 th:text="|${v.version} · compilación ${v.codigo}|"></h3>
+<p class="notas" th:text="${v.novedades}"></p>
+<a th:href="${v.descarga}">Comprobar descarga del APK</a>
+<p th:if="${v.publicada != null}" th:text="|Publicada el ${#temporals.format(v.publicada, 'dd/MM/yyyy', 'America/Bogota')}|"></p>
+<form th:if="${v.publicada == null}" method="post" th:action="@{/admin/versiones-app/{codigo}/publicar(codigo=${v.codigo})}"><button class="boton">Publicar para clientes</button></form></article>
+</main></body></html>

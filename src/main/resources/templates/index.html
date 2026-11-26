@@ -55,6 +55,7 @@
                     <nav class="hidden md:flex items-center gap-6">
                         <a class="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors" th:href="@{/usuario/Inicio}">Inicio</a>
                         <a class="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors" href="/vehiculos">Nuestros Modelos</a>
+                        <a href="/descargar-app">Descarga nuestra app</a>
                         <a class="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors" th:href="@{/vehiculo-ideal}">Vehículo Ideal</a>
                         <a class="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors" th:href="@{/usuario/agendamiento}">Agendamiento online</a>
 
@@ -95,6 +96,7 @@
         <nav class="mobile-nav">
             <a th:href="@{/usuario/Inicio}">Inicio</a>
             <a href="/vehiculos">Nuestros Modelos</a>
+                        <a href="/descargar-app">Descarga nuestra app</a>
             <a th:href="@{/vehiculo-ideal}">Vehículo Ideal</a>
             <a th:href="@{/usuario/agendamiento}">Agendamiento online</a>
 
@@ -316,6 +318,11 @@
     </section>
 
     <!-- Footer -->
+    <section class="bg-gray-900 text-white py-12 px-6 text-center">
+        <h2 class="text-3xl font-bold">NextGen Motors en tu teléfono</h2>
+        <p class="my-4">Consulta tus citas y conversa con Dante desde la app Android.</p>
+        <a href="/descargar-app" class="inline-block rounded-lg bg-blue-600 px-6 py-3 font-semibold">Descarga nuestra app</a>
+    </section>
     <footer class="bg-background-light dark:bg-background-dark border-t border-gray-200 dark:border-gray-800">
         <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8">

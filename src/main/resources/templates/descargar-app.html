@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Descarga la app Android | NextGen Motors</title>
+  <link rel="stylesheet" href="/css/app-movil.css">
+</head>
+<body>
+<header><a class="marca" href="/">NextGen<span>Motors</span></a><a href="/">Volver al inicio</a></header>
+<main class="portada">
+  <section class="presentacion">
+    <div>
+      <h1>NextGen Motors<br>en tu Android.</h1>
+      <p>Consulta tus citas, habla con Dante y recibe los avisos del concesionario en tu teléfono.</p>
+      <div th:if="${version != null}">
+        <a class="boton" th:href="${version.descarga}">Descargar para Android ↓</a>
+        <p class="detalle">Versión <span th:text="${version.version}"></span> · <time th:text="${#temporals.format(version.publicada, 'dd/MM/yyyy', 'America/Bogota')}"></time></p>
+        <details><summary>Novedades de la versión</summary><p class="notas" th:text="${version.novedades}"></p></details>
+      </div>
+      <p th:if="${version == null}" class="pendiente">La descarga estará disponible cuando se publique la primera versión.</p>
+    </div>
+    <div class="pantallas"><img src="/images/app-citas.png" alt="Pantalla de bienvenida que presenta la gestión de citas"><img src="/images/app-chat.png" alt="Pantalla que presenta el chat con Dante"></div>
+  </section>
+  <section class="instalar">
+    <div><h2>Instalación en Android</h2><ol><li>Abre esta página en tu teléfono y descarga el APK.</li><li>Abre el archivo. Si Android lo solicita, permite la instalación desde tu navegador.</li><li>Confirma la instalación y abre NextGen Motors.</li></ol></div>
+    <figure><img width="128" height="128" src="/images/descargar-app-qr.png" alt="Código QR para abrir esta página en tu teléfono"><figcaption>Escanea desde tu teléfono</figcaption></figure>
+  </section>
+</main>
+</body></html>

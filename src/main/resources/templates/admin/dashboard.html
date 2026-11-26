@@ -1158,6 +1158,7 @@
             </ul>
 
             <div class="absolute bottom-0 w-full p-6 border-t border-gray-700">
+                <a sec:authorize="hasRole('ADMINISTRADOR')" class="block px-6 py-2 text-white" href="/admin/versiones-app">Versiones de la app</a>
                 <a href="/logout"
                     class="flex items-center gap-3 px-6 py-4 text-gray-300 hover:bg-gray-700 hover:text-white transition-all duration-300 rounded-lg">
                     <i class='bx bxs-log-out-circle text-xl'></i>

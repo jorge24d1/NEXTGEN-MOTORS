@@ -54,6 +54,8 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.requireCsrfProtectionMatcher(new OrRequestMatcher(
                         new AntPathRequestMatcher("/asesor/vehiculos/*/compartir", "POST"),
+                        new AntPathRequestMatcher("/admin/versiones-app", "POST"),
+                        new AntPathRequestMatcher("/admin/versiones-app/*/publicar", "POST"),
                         new AntPathRequestMatcher("/usuario/perfil/ofertas", "POST"))))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
@@ -90,6 +92,8 @@ public class SecurityConfig {
                         .requestMatchers("/perfil_gestor").hasRole("TRB_GESTOR")
                         .requestMatchers("/perfil_analisis").hasRole("TRB_ANALISIS")
                         .requestMatchers("/perfil_asesor").hasRole("TRB_ASESOR")
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/descargar-app", "/api/movil/version").permitAll()
+                        .requestMatchers("/admin/versiones-app", "/admin/versiones-app/**").hasRole("ADMINISTRADOR")
                         .requestMatchers("/admin/**").hasAnyRole("ADMINISTRADOR", "TRABAJADOR", "TRB_GESTOR", "TRB_ANALISIS", "TRB_ASESOR")
                         .requestMatchers("/usuario/cita", "/usuario/cita/guardar").hasAnyRole("USUARIO", "ADMINISTRADOR", "TRABAJADOR", "TRB_GESTOR", "TRB_ANALISIS", "TRB_ASESOR")
                         .anyRequest().authenticated()
